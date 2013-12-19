@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package distributed.user;
+
+import distributed.main.MainFrame;
 
 /**
  *
@@ -40,7 +41,6 @@ public class AccessFrame extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setAutoRequestFocus(false);
         setResizable(false);
 
         jLabelUser.setText("Username:");
@@ -48,15 +48,24 @@ public class AccessFrame extends javax.swing.JFrame {
         jLabelPasswort.setText("Passwort:");
 
         jButtonCancel.setText("Abbrechen");
+        jButtonCancel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonCancelMouseClicked(evt);
+            }
+        });
 
         jButtonConnect.setText("Verbinden");
+        jButtonConnect.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonConnectMouseClicked(evt);
+            }
+        });
 
         jLabelReg.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         jLabelReg.setText("Zum Registrieren hier klicken.");
 
-        jLabelUserIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/distributed/icons/user_64.png"))); // NOI18N
+        jLabelUserIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/distributed/icons/Database_48x48.png"))); // NOI18N
 
-        jTextArea1.setBackground(java.awt.Color.lightGray);
         jTextArea1.setColumns(20);
         jTextArea1.setLineWrap(true);
         jTextArea1.setRows(5);
@@ -145,6 +154,21 @@ public class AccessFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButtonConnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonConnectMouseClicked
+        //Wenn es ihm erlaubt starte MainFrame
+        MainFrame mMainFrame = new MainFrame();
+        //Setzt das Fenster relativ zu diesem Frame
+        mMainFrame.setLocationRelativeTo(this);
+        mMainFrame.setVisible(true);
+
+        this.setVisible(false);
+    }//GEN-LAST:event_jButtonConnectMouseClicked
+
+    private void jButtonCancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonCancelMouseClicked
+        //System beenden und loggen
+        System.exit(0);
+    }//GEN-LAST:event_jButtonCancelMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -156,26 +180,24 @@ public class AccessFrame extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Mac OS X".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AccessFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AccessFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AccessFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(AccessFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
-                new AccessFrame().setVisible(true);
+                AccessFrame mAccessFrame = new AccessFrame();
+                //Setzt das Fenster in die Mitte des Bilschirmes
+                mAccessFrame.setLocationRelativeTo(null);
+                mAccessFrame.setVisible(true);
             }
         });
     }
