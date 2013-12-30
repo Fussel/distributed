@@ -58,6 +58,7 @@ public class DistributedKrypto {
     }
     
     private void generateKeys() {
+        System.out.println("Generate Keys");
         try {
             KeyPairGenerator gen = KeyPairGenerator.getInstance(ALGORITHM);
             gen.initialize(KEY_LENGHT);
@@ -74,6 +75,7 @@ public class DistributedKrypto {
     }
     
     private void storeKeys() {
+        System.out.println("Store keys");
         //Create dir
         File dir = new File(DIR);
         if(!dir.exists())
@@ -109,6 +111,7 @@ public class DistributedKrypto {
     }
     
     private void loadKeys() {
+        System.out.println("Load keys");
         KeyFactory factory = null;
         
         try {
