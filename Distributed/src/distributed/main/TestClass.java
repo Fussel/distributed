@@ -20,26 +20,24 @@ import org.jgroups.Message;
 public class TestClass {
     
     public static void main(String[] args) {
+    
+        List<CoreThreader> coreList = new ArrayList<>();
+        int rand;
         
-        DistributedKrypto.getInstance();
-        DistributedKrypto.getInstance();
-//        List<CoreThreader> coreList = new ArrayList<>();
-//        int rand;
-//        
-//        System.out.println("Creating instances!");
-//        
-//        for(int i = 0; i < 10; i++) {
-//            CoreThreader t = new CoreThreader();
-//            t.start();
-//            
-//            coreList.add(t);
-//        }
-//        
-//        
-//        while(true) {
-//           
-//          
-//        }
+        System.out.println("Creating instances!");
+        
+        for(int i = 0; i < 10; i++) {
+            CoreThreader t = new CoreThreader();
+            t.start();
+            
+            coreList.add(t);
+        }
+        
+        
+        while(true) {
+           
+          
+        }
     }
     
     public static class CoreThreader extends Thread {

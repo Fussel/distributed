@@ -5,12 +5,15 @@
  */
 package distributed.net;
 
+import distributed.dao.Post;
+import distributed.dao.PrivateMessage;
+import java.util.ArrayList;
+import java.util.List;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
-import org.jgroups.blocks.GroupRequest;
 
 /**
  *
@@ -28,6 +31,8 @@ public class DistributedCore {
     private Address leader;
 
     private static DistributedCore instance;
+    
+    private List<String> userList; // only for testing
 
     public static DistributedCore getInstance() {
         if (instance == null) {
@@ -47,6 +52,8 @@ public class DistributedCore {
             groupChannel.setName("Hans");
             leaderChannel = new JChannel();
             //TODO Set the operator flag
+            
+            userList = new ArrayList<>();
         } catch (Exception e) {
             e.printStackTrace();
             //TODO Log the event
@@ -141,12 +148,19 @@ public class DistributedCore {
                 System.out.println("Leader is: " + (Address) msg.getObject());
             } else if (msg.getObject() instanceof String) {
                 processStringMessage((String) msg.getObject());
+            } else if(msg.getObject() instanceof Post) {
+                
+            } else if(msg.getObject() instanceof PrivateMessage) {
+                
             }
         }
 
         private void processStringMessage(String message) {
             if (message.equals("update")) {
                 System.out.println("Update request");
+            } else if(message.equals("close")) {
+                groupChannel.close();
+                System.out.println("Logged out");
             }
         }
 
@@ -156,7 +170,17 @@ public class DistributedCore {
                 try {
                     //TODO Send leader message
                     System.out.println("***********************************");
-                    System.out.println(view);
+                    System.out.println("User joined: " + view.getMembers().get(view.getMembers().size() - 1)); 
+                    Address newUser = view.getMembers().get(view.getMembers().size() -1);
+                    if(!userList.contains(newUser.toString())) {
+                        userList.add(newUser.toString());
+                        System.out.println("User accepted");
+                    } else {
+                        System.out.println("User already in network");
+                        //TODO Longer actions should be moved to an own thread
+                        sendMessage(new Message(newUser, "close"));
+                        //TODO Close user connection. this could be done with JMX and the managed operation close()
+                    }
                     System.out.println("***********************************");
                     groupChannel.send(new Message(null, groupChannel.getAddress()));
                 } catch (Exception e) {
