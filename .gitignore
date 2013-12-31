@@ -19,3 +19,27 @@ build.properties
 *.jar
 *.war
 *.ear
+
+### Java ###
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+### Java ###
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+### Java ###
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
