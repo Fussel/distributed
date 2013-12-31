@@ -16,19 +16,19 @@ import java.util.GregorianCalendar;
  */
 public class PrivateMessage implements Serializable {
     
-    private String message;
+    private byte[] message;
     private String receiver;
     private String sender;
     private Date sendDate;
 
-    public PrivateMessage(String receiver, String message) {
+    public PrivateMessage(String receiver, byte[] message) {
         this.message = message;
         this.receiver = receiver;
         //TODO Set sender Prop
         sendDate = GregorianCalendar.getInstance().getTime();
     }
 
-    public String getMessage() {
+    public byte[] getMessage() {
         return message;
     }
 

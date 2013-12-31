@@ -22,6 +22,7 @@ import javax.crypto.Cipher;
 /**
  *
  * @author steffen
+ * @version 0.1 - not tested
  */
 public class DistributedKrypto {
     private static DistributedKrypto instance;
@@ -39,6 +40,10 @@ public class DistributedKrypto {
     private PrivateKey privateKey;
     private PublicKey publicKey;
     
+    /**
+     * Return an instance of DistributedKrypto.
+     * @return Instance of DistributedKrypto.
+     */
     public static synchronized DistributedKrypto getInstance() {
         if(instance == null)
             instance = new DistributedKrypto();
@@ -57,6 +62,11 @@ public class DistributedKrypto {
             loadKeys();
     }
     
+    /**
+     * Generating a new key pair.
+     * This method should only be called once, to ensure that 
+     * the client is always using the same key.
+     */
     private void generateKeys() {
         System.out.println("Generate Keys");
         try {
@@ -74,6 +84,9 @@ public class DistributedKrypto {
         }
     }
     
+    /**
+     * Store the keys in a file.
+     */
     private void storeKeys() {
         System.out.println("Store keys");
         //Create dir
@@ -110,6 +123,9 @@ public class DistributedKrypto {
         }
     }
     
+    /**
+     * Load the key file.
+     */
     private void loadKeys() {
         System.out.println("Load keys");
         KeyFactory factory = null;
@@ -150,10 +166,26 @@ public class DistributedKrypto {
         factory = null;
     }
     
+    /**
+     * Get an instance of the local public key.
+     * 
+     * @return Instance of the local public key. 
+     */
     public PublicKey getMyPublicKey() {
         return publicKey;
     }
     
+    /**
+     * Encrypt a string object with the given public key. The 
+     * encryption is using the RSA algorithm with a 1024 key length.
+     * 
+     * The encrypted byte array <b>should not be modified, to prevent
+     * invalid block segmentation</b>.
+     * 
+     * @param message The message which should be encrypted.
+     * @param key The public key of the receiver.
+     * @return 
+     */
     public byte[] encryptString(String message, PublicKey key) {
         Cipher cipher;
         
@@ -167,6 +199,16 @@ public class DistributedKrypto {
         }
     }
     
+    /**
+     * Decrypts an byte array with the own private key and returns the
+     * string representation of it.
+     * 
+     * <b>The byte array must be unmodified to prevent invalid block 
+     * segmentations</b>
+     * 
+     * @param data The byte array which should be decrypted.
+     * @return The decrypted string representation of the array.
+     */
     public String decryptMessage(byte[] data) {
         try {
             Cipher cipher;
