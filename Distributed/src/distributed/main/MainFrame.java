@@ -27,7 +27,6 @@ public class MainFrame extends javax.swing.JFrame {
         
         DistributedCore.getInstance().setTextPanel(jTextPaneMain);
         DistributedCore.getInstance().joinGroup("DistributedLeaders");
-        DistributedCore.getInstance().sendMessage(new Message(null, "sss"));
     }
 
     /**
@@ -179,6 +178,9 @@ public class MainFrame extends javax.swing.JFrame {
         dialog.setTitle("New Message");
         dialog.setLocationRelativeTo(rootWindow);
         dialog.setVisible(true);
+        
+        if (dialog.getMessage() != null)
+        DistributedCore.getInstance().sendMessage(dialog.getMessage());
     }//GEN-LAST:event_jButtonNewMsgActionPerformed
 
     private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed

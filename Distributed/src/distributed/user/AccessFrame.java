@@ -8,6 +8,7 @@ package distributed.user;
 import distributed.main.MainFrame;
 import distributed.util.SettingsProvider;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -64,6 +65,11 @@ public class AccessFrame extends javax.swing.JFrame {
         jButtonConnect.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButtonConnectMouseClicked(evt);
+            }
+        });
+        jButtonConnect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonConnectActionPerformed(evt);
             }
         });
 
@@ -168,6 +174,11 @@ public class AccessFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonConnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonConnectMouseClicked
+       
+ if (jTextFieldUsername.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this.getParent(), "Username is empty.");
+            jTextFieldUsername.requestFocus();
+        } else {        
         //Wenn es ihm erlaubt starte MainFrame
         MainFrame mMainFrame = new MainFrame();
         //Setzt das Fenster relativ zu diesem Frame
@@ -175,6 +186,7 @@ public class AccessFrame extends javax.swing.JFrame {
         mMainFrame.setVisible(true);
 
         this.setVisible(false);
+        }
     }//GEN-LAST:event_jButtonConnectMouseClicked
 
     private void jButtonCancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonCancelMouseClicked
@@ -191,6 +203,10 @@ public class AccessFrame extends javax.swing.JFrame {
         jTextFieldUsername.setText(SettingsProvider.getInstance().getUserName());
         jTextFieldUsername.updateUI();
     }//GEN-LAST:event_jLabelRegMouseClicked
+
+    private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConnectActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonConnectActionPerformed
 
     /**
      * @param args the command line arguments
