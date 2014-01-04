@@ -7,8 +7,10 @@ package distributed.net;
 
 import distributed.dao.Post;
 import distributed.dao.PrivateMessage;
+import distributed.util.SettingsProvider;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JTextPane;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
@@ -33,6 +35,8 @@ public class DistributedCore {
     private static DistributedCore instance;
     
     private List<String> userList; // only for testing
+    
+    private JTextPane output;
 
     public static DistributedCore getInstance() {
         if (instance == null) {
@@ -49,7 +53,7 @@ public class DistributedCore {
             //TODO register the listeners
             groupChannel = new JChannel();
             groupChannel.setReceiver(new GroupListener());
-            groupChannel.setName("Hans");
+            groupChannel.setName(SettingsProvider.getInstance().getUserName());
             leaderChannel = new JChannel();
             //TODO Set the operator flag
             
@@ -121,17 +125,19 @@ public class DistributedCore {
             try {
                 leaderChannel.connect(LEADER_CHANNEL);
                 System.out.println("LeaderChannel joined");
+                output.setText(output.getText() + "\n" + "LeaderChannel joined");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
 
             System.out.println("--------------------------------------");
+            output.setText(output.getText() + "\n" + "LeaderChannel joined");
             for (Address a : view.getMembers()) {
                 System.out.println(a.toString());
+                output.setText(output.getText() + "\n" + a.toString());
             }
             System.out.println("--------------------------------------");
-
         }
 
         Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
@@ -140,12 +146,19 @@ public class DistributedCore {
 
     }
 
+    public void setTextPanel(JTextPane jTextPaneMain) {
+        if (jTextPaneMain != null) { 
+            output = jTextPaneMain;
+        }
+    }
+
     private class GroupListener extends ReceiverAdapter {
 
         @Override
         public void receive(Message msg) {
             if (msg.getObject() instanceof Address) {
                 System.out.println("Leader is: " + (Address) msg.getObject());
+                output.setText(output.getText() + "\n" + "Leader is: " + (Address) msg.getObject());
             } else if (msg.getObject() instanceof String) {
                 processStringMessage((String) msg.getObject());
             } else if(msg.getObject() instanceof Post) {
@@ -158,9 +171,11 @@ public class DistributedCore {
         private void processStringMessage(String message) {
             if (message.equals("update")) {
                 System.out.println("Update request");
+                output.setText(output.getText() + "\n" + "Update request");
             } else if(message.equals("close")) {
                 groupChannel.close();
                 System.out.println("Logged out");
+                output.setText(output.getText() + "\n" + "Logged out");
             }
         }
 

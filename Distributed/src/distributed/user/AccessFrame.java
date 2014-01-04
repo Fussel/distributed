@@ -6,7 +6,6 @@
 package distributed.user;
 
 import distributed.main.MainFrame;
-import distributed.msg.MsgDialog;
 import distributed.util.SettingsProvider;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;

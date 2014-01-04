@@ -7,9 +7,11 @@
 package distributed.main;
 
 import distributed.msg.MsgDialog;
+import distributed.net.DistributedCore;
 import distributed.user.AccessFrame;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import org.jgroups.Message;
 
 /**
  *
@@ -22,6 +24,10 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+        
+        DistributedCore.getInstance().setTextPanel(jTextPaneMain);
+        DistributedCore.getInstance().joinGroup("DistributedLeaders");
+        DistributedCore.getInstance().sendMessage(new Message(null, "sss"));
     }
 
     /**
@@ -42,7 +48,7 @@ public class MainFrame extends javax.swing.JFrame {
         jButtonSettings = new javax.swing.JButton();
         jButtonLogout = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        jTextPaneMain = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -113,9 +119,9 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(jButtonLogout);
 
-        jTextPane1.setDragEnabled(false);
-        jTextPane1.setEnabled(false);
-        jScrollPane1.setViewportView(jTextPane1);
+        jTextPaneMain.setDragEnabled(false);
+        jTextPaneMain.setEnabled(false);
+        jScrollPane1.setViewportView(jTextPaneMain);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -227,7 +233,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JTextPane jTextPaneMain;
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 }
