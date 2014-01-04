@@ -42,8 +42,9 @@ public class SettingsProvider {
     private static final String SETTINGS_FILE = "../Settings.properties";
    
     public synchronized static SettingsProvider getInstance() {
-        if(instance == null) 
+        if(instance == null) {
            instance = new SettingsProvider();
+        }
         
         return instance;
     }
@@ -91,7 +92,7 @@ public class SettingsProvider {
         props.setProperty(ROOT_DIR, rootDirectory);
         writePropertyChanges();
     }
-    
+       
     public String getUserName() {
         return props.getProperty(USER_NAME, null);
     }
