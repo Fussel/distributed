@@ -10,7 +10,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
@@ -26,15 +25,15 @@ public class SettingsProvider {
     private  Properties props;
     
     //TODO Add all needed property tags
-    private static final String USER_NAME = "user.name";
-    private static final String USER_GROUP = "user.group";
-    private static final String USER_TYPE    = "user.type";
-    private static final String ROOT_DIR = "dir.root";
-    private static final String KEY_DIR = "dir.key";
-    private static final String PUB_KEY = "key.public";
-    private static final String PRI_KEY = "key.private";
-    private static final String DB_DIR  = "dir.database";
-    private static final String DB_NAME = "db.name";
+    private static final String USER_NAME       = "user.name";
+    private static final String USER_GROUP      = "user.group";
+    private static final String USER_TYPE       = "user.type";
+    private static final String ROOT_DIR        = "dir.root";
+    private static final String KEY_DIR         = "dir.key";
+    private static final String PUB_KEY         = "key.public";
+    private static final String PRI_KEY         = "key.private";
+    private static final String DB_DIR          = "dir.database";
+    private static final String DB_NAME         = "db.name";
     
     public static enum UserType {
         MODERATOR, USER;
@@ -87,9 +86,57 @@ public class SettingsProvider {
     /**
      * 
      */
-    public void setRootDirectory(String rootDirectory) {
+    public void storeRootDirectory(String rootDirectory) {
         //TODO check if the root dir is already set. if so all files must be copied.
+        props.setProperty(ROOT_DIR, rootDirectory);
+        writePropertyChanges();
+    }
+    
+    public String getUserName() {
+        return props.getProperty(USER_NAME, null);
+    }
+    
+    public String getUserGroup() {
+        return props.getProperty(USER_GROUP, null);
+    }
+    
+    public UserType getUserType() {
+        //TODO change the enum to set up with the string parameter
+        String type = props.getProperty(USER_TYPE, null);
         
+        if(type == null) 
+            return null; //TODO Or should client be returned?
+        else if(type.equals("MODERATOR"))
+            return UserType.MODERATOR;
+        else if(type.equals("USER"))
+            return UserType.USER;
+        
+        //This shall be never reached
+        return null;
+    }
+    
+    public String getRootDir() {
+        return props.getProperty(ROOT_DIR, null);
+    }
+    
+    public String getDBDir() {
+        return props.getProperty(DB_DIR, null);
+    }
+    
+    public String getKeyDir() {
+        return props.getProperty(KEY_DIR, null);
+    }
+    
+    public String getPublicKeyName() {
+        return props.getProperty(PUB_KEY, null);
+    }
+    
+    public String getPrivateKeyDir() {
+        return props.getProperty(PRI_KEY, null);
+    }
+    
+    public String getDatabaseName() {
+        return props.getProperty(DB_NAME, null);
     }
     
     private boolean writePropertyChanges() {
