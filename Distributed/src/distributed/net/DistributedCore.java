@@ -162,7 +162,8 @@ public class DistributedCore {
             } else if (msg.getObject() instanceof String) {
                 processStringMessage((String) msg.getObject());
             } else if(msg.getObject() instanceof Post) {
-                
+                output.setText(output.getText() + "\n" + SettingsProvider.getInstance().getUserName() + " sendet: " + ((Post) msg.getObject()).getMessage());
+                System.out.println(SettingsProvider.getInstance().getUserName() + ": " + ((Post) msg.getObject()).getMessage());
             } else if(msg.getObject() instanceof PrivateMessage) {
                 
             }

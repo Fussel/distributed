@@ -6,11 +6,17 @@
 
 package distributed.msg;
 
+import distributed.dao.Post;
+import distributed.net.DistributedCore;
+import javax.swing.JOptionPane;
+import org.jgroups.Message;
+
 /**
  *
  * @author kiefer
  */
 public class MsgDialog extends javax.swing.JDialog {
+    private Message mMessage;
 
     /**
      * Creates new form MsgDialog
@@ -18,6 +24,14 @@ public class MsgDialog extends javax.swing.JDialog {
     public MsgDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+    }
+    
+    public Message getMessage() {
+        return mMessage;
+    }
+    
+    public void setMessage(Message m) {
+        this.mMessage = m;
     }
 
     /**
@@ -106,8 +120,15 @@ public class MsgDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void jButtonOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOkActionPerformed
-        //Hier etc
-        this.dispose();
+        
+        if (jTextFieldMsg.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this.getParent(), "Message is empty.");
+            jTextFieldMsg.requestFocus();
+        } else {
+            mMessage = new Message(null, new Post(jTextFieldMsg.getText(), null));
+            this.dispose(); 
+        }
+
     }//GEN-LAST:event_jButtonOkActionPerformed
 
 

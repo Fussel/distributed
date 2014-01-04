@@ -6,6 +6,7 @@
 
 package distributed.dao;
 
+import java.io.Serializable;
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -14,13 +15,16 @@ import java.util.GregorianCalendar;
  *
  * @author steffen
  */
-public class Post {
+public class Post implements Serializable{
     
     private PublicKey key;
     private Date postDate;
     private String sender;
     private String message;
-    
+
+    public Post() {
+    }
+        
     public Post(String message, PublicKey key) {
         this.key = key;
         this.message = message;
