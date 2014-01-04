@@ -140,6 +140,17 @@ public class SettingsProvider {
         return props.getProperty(DB_NAME, null);
     }
     
+    public String getCanonicalDatabaseFile() {
+        StringBuilder builder = new StringBuilder();
+        
+        builder.append(props.getProperty(ROOT_DIR));
+        builder.append(props.getProperty(DB_DIR));
+        builder.append(props.getProperty(DB_NAME));
+        
+        return builder.toString();
+        //Maybe null builder for gc
+    }
+    
     private boolean writePropertyChanges() {
         try {
             File props = new File(SETTINGS_FILE);
