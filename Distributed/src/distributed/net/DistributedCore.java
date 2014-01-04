@@ -116,6 +116,17 @@ public class DistributedCore {
         View chan = groupChannel.getView();
 
     }
+    
+    /**
+     * This method is used for a forced logout of this client
+     * and is triggered when there was a problem while logging in.
+     */
+    protected void closeConnection() {
+        if(leaderChannel != null)
+            leaderChannel.close();
+        if(groupChannel != null)
+            groupChannel.close();
+    }
 
     private void bootStrap() {
         System.out.println("Bootstrap started");
@@ -156,30 +167,9 @@ public class DistributedCore {
 
         @Override
         public void receive(Message msg) {
-            if (msg.getObject() instanceof Address) {
-                System.out.println("Leader is: " + (Address) msg.getObject());
-                output.setText(output.getText() + "\n" + "Leader is: " + (Address) msg.getObject());
-            } else if (msg.getObject() instanceof String) {
-                processStringMessage((String) msg.getObject());
-            } else if(msg.getObject() instanceof Post) {
-                output.setText(output.getText() + "\n" + SettingsProvider.getInstance().getUserName() + " sendet: " + ((Post) msg.getObject()).getMessage());
-                System.out.println(SettingsProvider.getInstance().getUserName() + ": " + ((Post) msg.getObject()).getMessage());
-            } else if(msg.getObject() instanceof PrivateMessage) {
-                
-            }
+            MessageProcessor.getInstance().addMessage(msg);
         }
-
-        private void processStringMessage(String message) {
-            if (message.equals("update")) {
-                System.out.println("Update request");
-                output.setText(output.getText() + "\n" + "Update request");
-            } else if(message.equals("close")) {
-                groupChannel.close();
-                System.out.println("Logged out");
-                output.setText(output.getText() + "\n" + "Logged out");
-            }
-        }
-
+        
         @Override
         public void viewAccepted(View view) {
             if (isLeader) {
