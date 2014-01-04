@@ -3,15 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package distributed.main;
 
 import distributed.msg.MsgDialog;
 import distributed.net.DistributedCore;
 import distributed.user.AccessFrame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.Action;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import org.jgroups.Message;
 
 /**
  *
@@ -24,9 +31,49 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
-        
+
         DistributedCore.getInstance().setTextPanel(jTextPaneMain);
         DistributedCore.getInstance().joinGroup("DistributedLeaders");
+
+        jTextPaneMain.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                showPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                showPopup(e);
+            }
+
+            private void showPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showMenu(e);
+                }
+            }
+        });
+
+    }
+
+    public void showMenu(MouseEvent evt) {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem jMenuItemShare = new javax.swing.JMenuItem();
+        jMenuItemShare.setText("Share");
+        jMenuItemShare.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (jTextPaneMain.getSelectedText().equals("")) {
+                } else {
+                    JOptionPane.showConfirmDialog(getParent(), "Hier dann share Dialog (" + jTextPaneMain.getSelectedText() + ")");
+                }
+            }
+        });
+
+        menu.add(jMenuItemShare);
+        menu.add(new JPopupMenu.Separator());
+        menu.show(evt.getComponent(), evt.getX(), evt.getY());
     }
 
     /**
@@ -118,8 +165,8 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(jButtonLogout);
 
+        jTextPaneMain.setEditable(false);
         jTextPaneMain.setDragEnabled(false);
-        jTextPaneMain.setEnabled(false);
         jScrollPane1.setViewportView(jTextPaneMain);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -165,11 +212,11 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonLogoutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonLogoutMouseClicked
-       
+
     }//GEN-LAST:event_jButtonLogoutMouseClicked
 
     private void jButtonNewMsgMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonNewMsgMouseClicked
- 
+
     }//GEN-LAST:event_jButtonNewMsgMouseClicked
 
     private void jButtonNewMsgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNewMsgActionPerformed
@@ -178,9 +225,10 @@ public class MainFrame extends javax.swing.JFrame {
         dialog.setTitle("New Message");
         dialog.setLocationRelativeTo(rootWindow);
         dialog.setVisible(true);
-        
-        if (dialog.getMessage() != null)
-        DistributedCore.getInstance().sendMessage(dialog.getMessage());
+
+        if (dialog.getMessage() != null) {
+            DistributedCore.getInstance().sendMessage(dialog.getMessage());
+        }
     }//GEN-LAST:event_jButtonNewMsgActionPerformed
 
     private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
