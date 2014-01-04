@@ -43,9 +43,15 @@ public class DatabaseManager {
             connection = new JdbcConnectionSource(DATABASE_DRIVER + 
                     SettingsProvider.getInstance().getCanonicalDatabaseFile());
             
+            
+            
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    private void initDatabase() {
+        //TODO Database model needed
     }
     
 }
