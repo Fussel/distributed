@@ -208,5 +208,19 @@ public class DistributedCore {
 
     private class LeaderListener extends ReceiverAdapter {
 
+        @Override
+        public void receive(Message msg) {
+            super.receive(msg); 
+            System.out.println("Leader message received");
+        }
+
+        @Override
+        public void viewAccepted(View view) {
+            super.viewAccepted(view); 
+            System.out.println("New leader added");
+        }
+        
+        
+        
     }
 }
