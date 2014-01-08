@@ -53,7 +53,8 @@ public class DistributedCore {
             //TODO register the listeners
             groupChannel = new JChannel();
             groupChannel.setReceiver(new GroupListener());
-            groupChannel.setName(SettingsProvider.getInstance().getUserName());
+            groupChannel.setName(SettingsProvider.getInstance().getUserName() + "-" + Math.random());
+             
             
             leaderChannel = new JChannel();
             //TODO Set the operator flag
@@ -77,6 +78,7 @@ public class DistributedCore {
         try {
             groupChannel.connect(groupName);
             System.out.println("Group-Channel joined: " + groupChannel.getClusterName());
+            System.out.println(groupChannel.getViewAsString());
             bootStrap();
 
             //TODO Check other members
@@ -143,7 +145,6 @@ public class DistributedCore {
                 e.printStackTrace();
             }
         } else {
-
             System.out.println("--------------------------------------");
             output.setText(output.getText() + "\n" + "LeaderChannel joined");
             for (Address a : view.getMembers()) {
@@ -153,8 +154,8 @@ public class DistributedCore {
             System.out.println("--------------------------------------");
         }
 
-        Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
-        sendMessage(new Message(u, "update"));
+        //Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
+        //sendMessage(new Message(u, "update"));
         //TODO Start the update
 
     }
@@ -174,7 +175,7 @@ public class DistributedCore {
         
         @Override
         public void viewAccepted(View view) {
-            if (isLeader) {
+           if (isLeader) {
                 try {
                     //TODO Send leader message
                     System.out.println("***********************************");
