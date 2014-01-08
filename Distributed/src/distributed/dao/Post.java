@@ -15,7 +15,7 @@ import java.util.GregorianCalendar;
  *
  * @author steffen
  */
-public class Post implements Serializable{
+public class Post implements Serializable {
     
     private PublicKey key;
     private Date postDate;
