@@ -33,7 +33,7 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
 
         DistributedCore.getInstance().setTextPanel(jTextPaneMain);
-        DistributedCore.getInstance().joinGroup("DistributedLeaders");
+        DistributedCore.getInstance().joinGroup("hanswurst");
 
         jTextPaneMain.addMouseListener(new MouseAdapter() {
 

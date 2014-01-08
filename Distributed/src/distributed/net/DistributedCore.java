@@ -54,6 +54,7 @@ public class DistributedCore {
             groupChannel = new JChannel();
             groupChannel.setReceiver(new GroupListener());
             groupChannel.setName(SettingsProvider.getInstance().getUserName());
+            
             leaderChannel = new JChannel();
             //TODO Set the operator flag
             
@@ -75,6 +76,7 @@ public class DistributedCore {
     public boolean joinGroup(String groupName) {
         try {
             groupChannel.connect(groupName);
+            System.out.println("Group-Channel joined: " + groupChannel.getClusterName());
             bootStrap();
 
             //TODO Check other members
@@ -135,7 +137,7 @@ public class DistributedCore {
             isLeader = true;
             try {
                 leaderChannel.connect(LEADER_CHANNEL);
-                System.out.println("LeaderChannel joined");
+                System.out.println("Channel joined: " + leaderChannel.getClusterName());
                 output.setText(output.getText() + "\n" + "LeaderChannel joined");
             } catch (Exception e) {
                 e.printStackTrace();
