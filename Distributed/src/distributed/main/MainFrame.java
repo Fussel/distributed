@@ -13,6 +13,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -33,6 +37,11 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
 
         DistributedCore.getInstance().setTextPanel(jTextPaneMain);
+        try {
+            DistributedCore.getInstance().configure(InetAddress.getByAddress(new byte[] {(byte)192, (byte)168, (byte)178, (byte)31}));
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
         DistributedCore.getInstance().joinGroup("hanswurst");
 
         jTextPaneMain.addMouseListener(new MouseAdapter() {

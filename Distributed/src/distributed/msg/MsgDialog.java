@@ -8,6 +8,7 @@ package distributed.msg;
 
 import distributed.dao.Post;
 import distributed.net.DistributedCore;
+import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import org.jgroups.Message;
 
@@ -51,11 +52,21 @@ public class MsgDialog extends javax.swing.JDialog {
         jTextFieldMsg = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         jButtonOk.setText("Send");
         jButtonOk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonOkActionPerformed(evt);
+            }
+        });
+        jButtonOk.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jButtonOkKeyPressed(evt);
             }
         });
 
@@ -71,6 +82,12 @@ public class MsgDialog extends javax.swing.JDialog {
         jComboBoxGroup.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gruppe HTW", "Gruppe PI", "Gruppe DEA", "Gruppe Andreas" }));
 
         jLabelMsg.setText("message:");
+
+        jTextFieldMsg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextFieldMsgKeyPressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -130,6 +147,18 @@ public class MsgDialog extends javax.swing.JDialog {
         }
 
     }//GEN-LAST:event_jButtonOkActionPerformed
+
+    private void jButtonOkKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButtonOkKeyPressed
+               
+    }//GEN-LAST:event_jButtonOkKeyPressed
+
+    private void jTextFieldMsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldMsgKeyPressed
+
+    }//GEN-LAST:event_jTextFieldMsgKeyPressed
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+
+    }//GEN-LAST:event_formKeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

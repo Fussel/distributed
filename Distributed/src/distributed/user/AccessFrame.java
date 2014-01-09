@@ -7,6 +7,7 @@ package distributed.user;
 
 import distributed.main.MainFrame;
 import distributed.util.SettingsProvider;
+import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -48,6 +49,11 @@ public class AccessFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         jLabelUser.setText("Username:");
 
@@ -70,6 +76,11 @@ public class AccessFrame extends javax.swing.JFrame {
         jButtonConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonConnectActionPerformed(evt);
+            }
+        });
+        jButtonConnect.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jButtonConnectKeyPressed(evt);
             }
         });
 
@@ -208,6 +219,14 @@ public class AccessFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonConnectActionPerformed
 
+    private void jButtonConnectKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButtonConnectKeyPressed
+
+    }//GEN-LAST:event_jButtonConnectKeyPressed
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+
+    }//GEN-LAST:event_formKeyPressed
+
     /**
      * @param args the command line arguments
      */
@@ -228,13 +247,13 @@ public class AccessFrame extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(AccessFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
                 AccessFrame mAccessFrame = new AccessFrame();
-                //Setzt das Fenster in die Mitte des Bilschirmes
+                
+                               //Setzt das Fenster in die Mitte des Bilschirmes
                 mAccessFrame.setLocationRelativeTo(null);
                 mAccessFrame.setVisible(true);
             }

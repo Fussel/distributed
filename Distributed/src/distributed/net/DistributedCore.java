@@ -5,9 +5,10 @@
  */
 package distributed.net;
 
-import distributed.dao.Post;
-import distributed.dao.PrivateMessage;
 import distributed.util.SettingsProvider;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JTextPane;
@@ -16,6 +17,20 @@ import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
+import org.jgroups.protocols.BARRIER;
+import org.jgroups.protocols.FD_ALL;
+import org.jgroups.protocols.FD_SOCK;
+import org.jgroups.protocols.FRAG2;
+import org.jgroups.protocols.MERGE2;
+import org.jgroups.protocols.MFC;
+import org.jgroups.protocols.PING;
+import org.jgroups.protocols.UDP;
+import org.jgroups.protocols.UFC;
+import org.jgroups.protocols.UNICAST2;
+import org.jgroups.protocols.VERIFY_SUSPECT;
+import org.jgroups.protocols.pbcast.GMS;
+import org.jgroups.protocols.pbcast.NAKACK;
+import org.jgroups.stack.ProtocolStack;
 
 /**
  *
@@ -33,9 +48,12 @@ public class DistributedCore {
     private Address leader;
 
     private static DistributedCore instance;
-    
+
+    private ProtocolStack stack;
+    private InetAddress networkInterface;
+
     private List<String> userList; // only for testing
-    
+
     private JTextPane output;
 
     public static DistributedCore getInstance() {
@@ -51,14 +69,14 @@ public class DistributedCore {
 
         try {
             //TODO register the listeners
-            groupChannel = new JChannel();
+            groupChannel = new JChannel(false);
+            stack = new ProtocolStack();
+            groupChannel.setProtocolStack(stack);
             groupChannel.setReceiver(new GroupListener());
             groupChannel.setName(SettingsProvider.getInstance().getUserName() + "-" + Math.random());
-             
-            
-            leaderChannel = new JChannel();
+
+            // leaderChannel = new JChannel();
             //TODO Set the operator flag
-            
             userList = new ArrayList<>();
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,10 +94,11 @@ public class DistributedCore {
      */
     public boolean joinGroup(String groupName) {
         try {
+
             groupChannel.connect(groupName);
             System.out.println("Group-Channel joined: " + groupChannel.getClusterName());
             System.out.println(groupChannel.getViewAsString());
-            bootStrap();
+           // bootStrap();
 
             //TODO Check other members
             return true;
@@ -87,6 +106,61 @@ public class DistributedCore {
             e.printStackTrace();
             //TODO Log the evenet.
             return false;
+        }
+    }
+
+    /**
+     * This method configures the protocol stack of the DistributedCore and must
+     * be run before you can use the instance of DistributedCore.
+     *
+     * @param interfaceAddress The InetAddress of the network interface which
+     * should be used to communicate with this
+     */
+    public void configure(InetAddress interfaceAddress) {
+        if (interfaceAddress == null) {
+            throw new IllegalArgumentException();
+        }
+
+        networkInterface = interfaceAddress;
+
+        try {
+            instance.buildigProtocollStack();
+//        } catch(UnconfiguredException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Building the protocol stack.
+     *
+     * @throws UnconfiguredException
+     */
+    private void buildigProtocollStack() throws RuntimeException {
+
+        if (networkInterface == null) {
+            throw new RuntimeException(); // Wird noch geändert
+        }
+        stack.addProtocol(new UDP().setValue("bind_addr", networkInterface))
+                .addProtocol(new PING())
+                .addProtocol(new MERGE2())
+                .addProtocol(new FD_SOCK())
+                .addProtocol(new FD_ALL().setValue("timeout", 12000)
+                        .setValue("interval", 3000))
+                .addProtocol(new VERIFY_SUSPECT())
+                .addProtocol(new BARRIER())
+                .addProtocol(new NAKACK())
+                .addProtocol(new UNICAST2())
+                //.addProtocol(new STABLE())
+                .addProtocol(new GMS())
+                .addProtocol(new UFC())
+                .addProtocol(new MFC())
+                .addProtocol(new FRAG2());
+        try {
+            stack.init();
+        } catch (Exception e) {
+            System.out.println("Unable to init networkstack");
+            e.printStackTrace();
         }
     }
 
@@ -120,16 +194,18 @@ public class DistributedCore {
         View chan = groupChannel.getView();
 
     }
-    
+
     /**
-     * This method is used for a forced logout of this client
-     * and is triggered when there was a problem while logging in.
+     * This method is used for a forced logout of this client and is triggered
+     * when there was a problem while logging in.
      */
     protected void closeConnection() {
-        if(leaderChannel != null)
+        if (leaderChannel != null) {
             leaderChannel.close();
-        if(groupChannel != null)
+        }
+        if (groupChannel != null) {
             groupChannel.close();
+        }
     }
 
     private void bootStrap() {
@@ -157,11 +233,10 @@ public class DistributedCore {
         //Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
         //sendMessage(new Message(u, "update"));
         //TODO Start the update
-
     }
 
     public void setTextPanel(JTextPane jTextPaneMain) {
-        if (jTextPaneMain != null) { 
+        if (jTextPaneMain != null) {
             output = jTextPaneMain;
         }
     }
@@ -172,16 +247,16 @@ public class DistributedCore {
         public void receive(Message msg) {
             MessageProcessor.getInstance().addMessage(msg);
         }
-        
+
         @Override
         public void viewAccepted(View view) {
-           if (isLeader) {
+            if (isLeader) {
                 try {
                     //TODO Send leader message
                     System.out.println("***********************************");
-                    System.out.println("User joined: " + view.getMembers().get(view.getMembers().size() - 1)); 
-                    Address newUser = view.getMembers().get(view.getMembers().size() -1);
-                    if(!userList.contains(newUser.toString())) {
+                    System.out.println("User joined: " + view.getMembers().get(view.getMembers().size() - 1));
+                    Address newUser = view.getMembers().get(view.getMembers().size() - 1);
+                    if (!userList.contains(newUser.toString())) {
                         userList.add(newUser.toString());
                         System.out.println("User accepted");
                     } else {
@@ -204,17 +279,15 @@ public class DistributedCore {
 
         @Override
         public void receive(Message msg) {
-            super.receive(msg); 
+            super.receive(msg);
             System.out.println("Leader message received");
         }
 
         @Override
         public void viewAccepted(View view) {
-            super.viewAccepted(view); 
+            super.viewAccepted(view);
             System.out.println("New leader added");
         }
-        
-        
-        
+
     }
 }
