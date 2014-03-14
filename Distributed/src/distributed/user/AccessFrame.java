@@ -17,13 +17,14 @@ import javax.swing.SwingUtilities;
  * @author kiefer
  */
 public class AccessFrame extends javax.swing.JFrame {
-
+JFrame thisFrame;
     /**
      * Creates new form LoginFrame
      */
     public AccessFrame() {
         initComponents();
-
+        
+       thisFrame = this;
         jTextFieldUsername.setText(SettingsProvider.getInstance().getUserName());
     }
 
@@ -269,10 +270,10 @@ public class AccessFrame extends javax.swing.JFrame {
              //Wenn es ihm erlaubt starte MainFrame
             MainFrame mMainFrame = new MainFrame();
             //Setzt das Fenster relativ zu diesem Frame
-            mMainFrame.setLocationRelativeTo(getParent());
+            mMainFrame.setLocationRelativeTo(thisFrame);
             mMainFrame.setVisible(true);
 
-            getParent().setVisible(false);
+            thisFrame.setVisible(false);
         }
         
         
