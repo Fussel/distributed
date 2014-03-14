@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JList;
 import javax.swing.JTextPane;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
@@ -54,7 +55,6 @@ public class DistributedCore {
 
     private List<String> userList; // only for testing
 
-    private JTextPane output;
 
     public static DistributedCore getInstance() {
         if (instance == null) {
@@ -75,7 +75,7 @@ public class DistributedCore {
             groupChannel.setReceiver(new GroupListener());
             groupChannel.setName(SettingsProvider.getInstance().getUserName() + "-" + Math.random());
 
-            // leaderChannel = new JChannel();
+            //leaderChannel = new JChannel();
             //TODO Set the operator flag
             userList = new ArrayList<>();
         } catch (Exception e) {
@@ -216,16 +216,16 @@ public class DistributedCore {
             try {
                 leaderChannel.connect(LEADER_CHANNEL);
                 System.out.println("Channel joined: " + leaderChannel.getClusterName());
-                output.setText(output.getText() + "\n" + "LeaderChannel joined");
+            
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
             System.out.println("--------------------------------------");
-            output.setText(output.getText() + "\n" + "LeaderChannel joined");
+
             for (Address a : view.getMembers()) {
                 System.out.println(a.toString());
-                output.setText(output.getText() + "\n" + a.toString());
+        
             }
             System.out.println("--------------------------------------");
         }
@@ -233,12 +233,6 @@ public class DistributedCore {
         //Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
         //sendMessage(new Message(u, "update"));
         //TODO Start the update
-    }
-
-    public void setTextPanel(JTextPane jTextPaneMain) {
-        if (jTextPaneMain != null) {
-            output = jTextPaneMain;
-        }
     }
 
     private class GroupListener extends ReceiverAdapter {

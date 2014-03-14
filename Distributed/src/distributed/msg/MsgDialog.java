@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package distributed.msg;
 
 import distributed.dao.Post;
 import distributed.net.DistributedCore;
 import java.awt.event.KeyEvent;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.jgroups.Message;
 
@@ -17,20 +17,25 @@ import org.jgroups.Message;
  * @author kiefer
  */
 public class MsgDialog extends javax.swing.JDialog {
+
     private Message mMessage;
 
-    /**
-     * Creates new form MsgDialog
-     */
-    public MsgDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public MsgDialog(JFrame rootWindow, boolean b, Message message) {
+        super(rootWindow, b);
         initComponents();
+        
+        mMessage = message;
+        
+        if (mMessage != null) {
+            jTextFieldMsg.setText(((Post) mMessage.getObject()).getMessage());
+            jComboBoxGroup.setEnabled(true);
+        }
     }
-    
+
     public Message getMessage() {
         return mMessage;
     }
-    
+
     public void setMessage(Message m) {
         this.mMessage = m;
     }
@@ -80,6 +85,7 @@ public class MsgDialog extends javax.swing.JDialog {
         jLabelGroup.setText("to group:");
 
         jComboBoxGroup.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gruppe HTW", "Gruppe PI", "Gruppe DEA", "Gruppe Andreas" }));
+        jComboBoxGroup.setEnabled(false);
 
         jLabelMsg.setText("message:");
 
@@ -133,23 +139,24 @@ public class MsgDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
+        mMessage = null;
         this.dispose();
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void jButtonOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOkActionPerformed
-        
+
         if (jTextFieldMsg.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this.getParent(), "Message is empty.");
             jTextFieldMsg.requestFocus();
         } else {
             mMessage = new Message(null, new Post(jTextFieldMsg.getText(), null));
-            this.dispose(); 
+            this.dispose();
         }
 
     }//GEN-LAST:event_jButtonOkActionPerformed
 
     private void jButtonOkKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButtonOkKeyPressed
-               
+
     }//GEN-LAST:event_jButtonOkKeyPressed
 
     private void jTextFieldMsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldMsgKeyPressed

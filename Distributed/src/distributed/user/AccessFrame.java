@@ -23,7 +23,7 @@ public class AccessFrame extends javax.swing.JFrame {
      */
     public AccessFrame() {
         initComponents();
-        
+
         jTextFieldUsername.setText(SettingsProvider.getInstance().getUserName());
     }
 
@@ -36,16 +36,19 @@ public class AccessFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jSeparator1 = new javax.swing.JSeparator();
         jPanel1 = new javax.swing.JPanel();
         jLabelUser = new javax.swing.JLabel();
         jLabelPasswort = new javax.swing.JLabel();
         jButtonCancel = new javax.swing.JButton();
         jButtonConnect = new javax.swing.JButton();
-        jLabelReg = new javax.swing.JLabel();
         jLabelUserIcon = new javax.swing.JLabel();
         jTextFieldUsername = new javax.swing.JTextField();
         jPasswordFieldPassword = new javax.swing.JPasswordField();
         jTextArea1 = new javax.swing.JTextArea();
+        jLabelGroup = new javax.swing.JLabel();
+        jComboBoxGroup = new javax.swing.JComboBox();
+        jSeparator2 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -55,14 +58,21 @@ public class AccessFrame extends javax.swing.JFrame {
             }
         });
 
+        jLabelUser.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelUser.setText("Username:");
 
+        jLabelPasswort.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelPasswort.setText("Passwort:");
 
         jButtonCancel.setText("Abbrechen");
         jButtonCancel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButtonCancelMouseClicked(evt);
+            }
+        });
+        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelActionPerformed(evt);
             }
         });
 
@@ -84,15 +94,6 @@ public class AccessFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabelReg.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        jLabelReg.setText("Zum Registrieren hier klicken.");
-        jLabelReg.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabelReg.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabelRegMouseClicked(evt);
-            }
-        });
-
         jLabelUserIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/distributed/icons/Database_48x48.png"))); // NOI18N
 
         jPasswordFieldPassword.setEnabled(false);
@@ -100,7 +101,7 @@ public class AccessFrame extends javax.swing.JFrame {
         jTextArea1.setColumns(20);
         jTextArea1.setLineWrap(true);
         jTextArea1.setRows(5);
-        jTextArea1.setText("Geben Sie ihr Passwort sowie   Username für den Server \"xyz\"  ein.");
+        jTextArea1.setText("Geben Sie ihr Passwort sowie Username für die von Ihnen ausgewählte Gruppe ein.");
         jTextArea1.setWrapStyleWord(true);
         jTextArea1.setAutoscrolls(false);
         jTextArea1.setBorder(null);
@@ -108,39 +109,40 @@ public class AccessFrame extends javax.swing.JFrame {
         jTextArea1.setEnabled(false);
         jTextArea1.setOpaque(false);
 
+        jLabelGroup.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabelGroup.setText("Gruppe:");
+
+        jComboBoxGroup.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButtonCancel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonConnect))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabelUserIcon)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jTextArea1, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabelUser)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabelPasswort)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPasswordFieldPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabelReg)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSeparator2)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabelUserIcon)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextArea1, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelUser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelPasswort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jComboBoxGroup, 0, 188, Short.MAX_VALUE)
+                            .addComponent(jPasswordFieldPassword)
+                            .addComponent(jTextFieldUsername)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButtonCancel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonConnect)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,12 +159,17 @@ public class AccessFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelPasswort)
                     .addComponent(jPasswordFieldPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonCancel)
-                    .addComponent(jButtonConnect))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabelReg))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelGroup)
+                    .addComponent(jComboBoxGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonConnect)
+                    .addComponent(jButtonCancel))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -176,8 +183,8 @@ public class AccessFrame extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -185,18 +192,19 @@ public class AccessFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonConnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonConnectMouseClicked
-       
- if (jTextFieldUsername.getText().isEmpty()) {
+
+        if (jTextFieldUsername.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this.getParent(), "Username is empty.");
             jTextFieldUsername.requestFocus();
-        } else {        
-        //Wenn es ihm erlaubt starte MainFrame
-        MainFrame mMainFrame = new MainFrame();
-        //Setzt das Fenster relativ zu diesem Frame
-        mMainFrame.setLocationRelativeTo(this);
-        mMainFrame.setVisible(true);
-
-        this.setVisible(false);
+        } else {
+            jButtonConnect.setText("Verbinde...");
+            jButtonCancel.setEnabled(false);
+            jButtonConnect.setEnabled(false);
+            jTextFieldUsername.setEnabled(false);
+            jPasswordFieldPassword.setEnabled(false);
+            jComboBoxGroup.setEnabled(false);
+           Thread t = new MyThread();
+           t.start();
         }
     }//GEN-LAST:event_jButtonConnectMouseClicked
 
@@ -204,16 +212,6 @@ public class AccessFrame extends javax.swing.JFrame {
         //System beenden und loggen
         System.exit(0);
     }//GEN-LAST:event_jButtonCancelMouseClicked
-
-    private void jLabelRegMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegMouseClicked
-        JFrame rootWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
-        RegisterDialog dialog = new RegisterDialog(rootWindow, true);
-        dialog.setTitle("Register new user");
-        dialog.setLocationRelativeTo(rootWindow);
-        dialog.setVisible(true);
-        jTextFieldUsername.setText(SettingsProvider.getInstance().getUserName());
-        jTextFieldUsername.updateUI();
-    }//GEN-LAST:event_jLabelRegMouseClicked
 
     private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConnectActionPerformed
         // TODO add your handling code here:
@@ -226,6 +224,10 @@ public class AccessFrame extends javax.swing.JFrame {
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
 
     }//GEN-LAST:event_formKeyPressed
+
+    private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonCancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -252,23 +254,42 @@ public class AccessFrame extends javax.swing.JFrame {
             @Override
             public void run() {
                 AccessFrame mAccessFrame = new AccessFrame();
-                
-                               //Setzt das Fenster in die Mitte des Bilschirmes
+
+                //Setzt das Fenster in die Mitte des Bilschirmes
                 mAccessFrame.setLocationRelativeTo(null);
                 mAccessFrame.setVisible(true);
             }
         });
     }
 
+    public class MyThread extends Thread {
+
+        @Override
+        public void run() {
+             //Wenn es ihm erlaubt starte MainFrame
+            MainFrame mMainFrame = new MainFrame();
+            //Setzt das Fenster relativ zu diesem Frame
+            mMainFrame.setLocationRelativeTo(getParent());
+            mMainFrame.setVisible(true);
+
+            getParent().setVisible(false);
+        }
+        
+        
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonConnect;
+    private javax.swing.JComboBox jComboBoxGroup;
+    private javax.swing.JLabel jLabelGroup;
     private javax.swing.JLabel jLabelPasswort;
-    private javax.swing.JLabel jLabelReg;
     private javax.swing.JLabel jLabelUser;
     private javax.swing.JLabel jLabelUserIcon;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField jPasswordFieldPassword;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextFieldUsername;
     // End of variables declaration//GEN-END:variables

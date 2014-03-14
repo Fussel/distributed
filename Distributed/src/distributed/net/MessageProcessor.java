@@ -51,6 +51,7 @@ public class MessageProcessor extends Thread {
                     processStringMessage(msg);
                 } else if (msg.getObject() instanceof Post) {
                     System.out.println(SettingsProvider.getInstance().getUserName() + ": " + ((Post) msg.getObject()).getMessage());
+                    //Hier Callback fuer Mainframe!!
                 } else if (msg.getObject() instanceof PrivateMessage) {
 
                 }
