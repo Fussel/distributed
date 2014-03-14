@@ -204,6 +204,7 @@ JFrame thisFrame;
             jTextFieldUsername.setEnabled(false);
             jPasswordFieldPassword.setEnabled(false);
             jComboBoxGroup.setEnabled(false);
+            SettingsProvider.getInstance().storeUserName(jTextFieldUsername.getText());
            Thread t = new MyThread();
            t.start();
         }
