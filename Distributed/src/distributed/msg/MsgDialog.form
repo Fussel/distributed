@@ -129,6 +129,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldMsg">
       <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldMsgActionPerformed"/>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTextFieldMsgKeyPressed"/>
       </Events>
     </Component>

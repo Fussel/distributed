@@ -11,6 +11,8 @@ import distributed.msg.MsgDialog;
 import distributed.net.DistributedCore;
 import distributed.settings.SettingsDialog;
 import distributed.user.AccessFrame;
+import distributed.util.DateUtils;
+import distributed.util.DistributedKrypto;
 import distributed.util.SettingsProvider;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -86,7 +88,7 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         });
-        
+
         JMenuItem jMenuItemDirectMessage = new javax.swing.JMenuItem();
         jMenuItemDirectMessage.setText("Direct Message");
         jMenuItemDirectMessage.addActionListener(new ActionListener() {
@@ -95,17 +97,21 @@ public class MainFrame extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (jList1.getSelectedIndex() > -1) {
                     Message m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
-                    showMessageDialog(((Post)m.getObject()).getSender(), m);
+                    if (m.getObject() instanceof PrivateMessage) {
+                         showMessageDialog(((PrivateMessage) m.getObject()).getSender(), m);
+                    } else if (m.getObject() instanceof Post) {
+                         showMessageDialog(((Post) m.getObject()).getSender(), m);
+                    }
+                   
                 }
             }
 
-           
         });
 
         menu.add(jMenuItemDirectMessage);
         menu.add(new JPopupMenu.Separator());
         menu.add(jMenuItemShare);
-        
+
         menu.show(evt.getComponent(), evt.getX(), evt.getY());
     }
 
@@ -297,7 +303,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void showMessageDialog(String reciever, Message message) {
         JFrame rootWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
         MsgDialog dialog = new MsgDialog(rootWindow, true, message, reciever);
-        
+
         if (message != null && reciever == null) {
             dialog.setTitle("Share Message");
         } else {
@@ -369,19 +375,21 @@ public class MainFrame extends javax.swing.JFrame {
 
         @Override
         public String getElementAt(int index) {
-            Message m =  messages.get(index);
+            Message m = messages.get(index);
             if (m.getObject() instanceof Post) {
-                   return "[" + ((Post) messages.get(index).getObject()).getPostDate() + "]" + ((Post) messages.get(index).getObject()).getSender() + ": " + ((Post) messages.get(index).getObject()).getMessage();
+                return "[" + DateUtils.getTimeFormatAsString(((Post) messages.get(index).getObject()).getPostDate()) + "]" + ((Post) messages.get(index).getObject()).getSender() + ": " + ((Post) messages.get(index).getObject()).getMessage();
             } else if (m.getObject() instanceof PrivateMessage) {
                 if (((PrivateMessage) m.getObject()).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
-                     return "PRIVATE [" + ((PrivateMessage) messages.get(index).getObject()).getSendDate() + "]" +((PrivateMessage) messages.get(index).getObject()).getSender() + ": " + ((PrivateMessage) messages.get(index).getObject()).getMessage();
-                } else {
-                    return "";
+                    PrivateMessage pm = ((PrivateMessage) messages.get(index).getObject());
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]"); 
+                    sb.append("von ").append(pm.getSender()).append(": ");
+                    sb.append(DistributedKrypto.getInstance().decryptMessage( pm.getMessage() )).append(" (privat)");
+                     return sb.toString();
                 }
-            } else {
-                          return "FEHLER";  
             }
-           
+
+            return null;
         }
 
         public void addElement(Message m) {

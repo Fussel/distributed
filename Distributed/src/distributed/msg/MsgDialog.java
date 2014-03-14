@@ -8,7 +8,9 @@ package distributed.msg;
 import distributed.dao.Post;
 import distributed.dao.PrivateMessage;
 import distributed.net.DistributedCore;
+import distributed.util.DistributedKrypto;
 import distributed.util.MessageHelper;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -27,14 +29,14 @@ public class MsgDialog extends javax.swing.JDialog {
         super(rootWindow, b);
         initComponents();
 
-        if (message != null) {
+        if (message != null && (message.getObject() instanceof Post)) {
             mMessage = message;
             jTextFieldMsg.setText(((Post) message.getObject()).getMessage());
             jComboBoxGroup.setEnabled(true);
         } else {
             mMessage = null;
         }
-        
+
         if (reciever != null) {
             this.reciever = reciever;
             jLabelUser.setText(reciever);
@@ -107,6 +109,11 @@ public class MsgDialog extends javax.swing.JDialog {
         jLabelMsg.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelMsg.setText("message:");
 
+        jTextFieldMsg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldMsgActionPerformed(evt);
+            }
+        });
         jTextFieldMsg.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jTextFieldMsgKeyPressed(evt);
@@ -180,13 +187,13 @@ public class MsgDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this.getParent(), "Message is empty.");
             jTextFieldMsg.requestFocus();
         } else {
-            Post mPost = new Post(jTextFieldMsg.getText(), null);
+            Post mPost = new Post(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey());
             if (reciever != null) {
-                mMessage = new Message(null, MessageHelper.buildPrivateMessage(mPost, jTextFieldMsg.getText()));
+                mMessage = MessageHelper.buildPrivateMessage(mPost, jTextFieldMsg.getText());
             } else {
                 mMessage = new Message(null, mPost);
             }
-            
+
             this.dispose();
         }
 
@@ -197,12 +204,18 @@ public class MsgDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonOkKeyPressed
 
     private void jTextFieldMsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldMsgKeyPressed
-
+        if ((int) evt.getKeyChar() == 10) {
+            jButtonOk.doClick();
+        }
     }//GEN-LAST:event_jTextFieldMsgKeyPressed
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
 
     }//GEN-LAST:event_formKeyPressed
+
+    private void jTextFieldMsgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldMsgActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldMsgActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
