@@ -97,12 +97,9 @@ public class MainFrame extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (jList1.getSelectedIndex() > -1) {
                     Message m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
-                    if (m.getObject() instanceof PrivateMessage) {
-                         showMessageDialog(((PrivateMessage) m.getObject()).getSender(), m);
-                    } else if (m.getObject() instanceof Post) {
-                         showMessageDialog(((Post) m.getObject()).getSender(), m);
-                    }
-                   
+                    if (m.getObject() instanceof Post) {
+                          showMessageDialog(((Post) m.getObject()).getSender(), m);
+                    } 
                 }
             }
 

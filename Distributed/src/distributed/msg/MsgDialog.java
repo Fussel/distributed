@@ -29,22 +29,18 @@ public class MsgDialog extends javax.swing.JDialog {
         super(rootWindow, b);
         initComponents();
 
+        mMessage = message;
         if (message != null && (message.getObject() instanceof Post)) {
-            mMessage = message;
             jTextFieldMsg.setText(((Post) message.getObject()).getMessage());
             jComboBoxGroup.setEnabled(true);
-        } else {
-            mMessage = null;
-        }
+        } 
 
         if (reciever != null) {
             this.reciever = reciever;
             jLabelUser.setText(reciever);
             jTextFieldMsg.setText("");
             jComboBoxGroup.setEnabled(false);
-        } else {
-            this.reciever = null;
-        }
+        } 
 
     }
 
@@ -187,11 +183,10 @@ public class MsgDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this.getParent(), "Message is empty.");
             jTextFieldMsg.requestFocus();
         } else {
-            Post mPost = new Post(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey());
             if (reciever != null) {
-                mMessage = MessageHelper.buildPrivateMessage(mPost, jTextFieldMsg.getText());
+                mMessage = MessageHelper.buildPrivateMessage((Post)mMessage.getObject(), jTextFieldMsg.getText());
             } else {
-                mMessage = new Message(null, mPost);
+                mMessage = new Message(null, new Post(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
             }
 
             this.dispose();
