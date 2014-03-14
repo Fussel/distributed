@@ -5,6 +5,7 @@
  */
 package distributed.net;
 
+import distributed.dao.Post;
 import distributed.util.SettingsProvider;
 import java.net.Inet4Address;
 import java.net.InetAddress;

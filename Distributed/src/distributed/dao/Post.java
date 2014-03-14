@@ -6,6 +6,7 @@
 
 package distributed.dao;
 
+import distributed.util.SettingsProvider;
 import java.io.Serializable;
 import java.security.PublicKey;
 import java.util.Date;
@@ -29,7 +30,7 @@ public class Post implements Serializable {
         this.key = key;
         this.message = message;
         postDate = GregorianCalendar.getInstance().getTime();
-        //TODO Set sender prop
+        sender = SettingsProvider.getInstance().getUserName();
     }
 
     public PublicKey getKey() {

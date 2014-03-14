@@ -6,7 +6,9 @@
 package distributed.msg;
 
 import distributed.dao.Post;
+import distributed.dao.PrivateMessage;
 import distributed.net.DistributedCore;
+import distributed.util.MessageHelper;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -19,17 +21,29 @@ import org.jgroups.Message;
 public class MsgDialog extends javax.swing.JDialog {
 
     private Message mMessage;
+    private String reciever;
 
-    public MsgDialog(JFrame rootWindow, boolean b, Message message) {
+    public MsgDialog(JFrame rootWindow, boolean b, Message message, String reciever) {
         super(rootWindow, b);
         initComponents();
-        
-        mMessage = message;
-        
-        if (mMessage != null) {
-            jTextFieldMsg.setText(((Post) mMessage.getObject()).getMessage());
+
+        if (message != null) {
+            mMessage = message;
+            jTextFieldMsg.setText(((Post) message.getObject()).getMessage());
             jComboBoxGroup.setEnabled(true);
+        } else {
+            mMessage = null;
         }
+        
+        if (reciever != null) {
+            this.reciever = reciever;
+            jLabelUser.setText(reciever);
+            jTextFieldMsg.setText("");
+            jComboBoxGroup.setEnabled(false);
+        } else {
+            this.reciever = null;
+        }
+
     }
 
     public Message getMessage() {
@@ -55,6 +69,8 @@ public class MsgDialog extends javax.swing.JDialog {
         jComboBoxGroup = new javax.swing.JComboBox();
         jLabelMsg = new javax.swing.JLabel();
         jTextFieldMsg = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabelUser = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addKeyListener(new java.awt.event.KeyAdapter() {
@@ -82,11 +98,13 @@ public class MsgDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabelGroup.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelGroup.setText("to group:");
 
         jComboBoxGroup.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gruppe HTW", "Gruppe PI", "Gruppe DEA", "Gruppe Andreas" }));
         jComboBoxGroup.setEnabled(false);
 
+        jLabelMsg.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelMsg.setText("message:");
 
         jTextFieldMsg.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -95,6 +113,11 @@ public class MsgDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel1.setText("to user:");
+
+        jLabelUser.setText("all");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -102,19 +125,23 @@ public class MsgDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabelMsg)
-                            .addComponent(jLabelGroup))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBoxGroup, 0, 288, Short.MAX_VALUE)
-                            .addComponent(jTextFieldMsg)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButtonCancel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonOk)))
+                        .addComponent(jButtonOk))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelGroup)
+                            .addComponent(jLabelMsg, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jComboBoxGroup, 0, 288, Short.MAX_VALUE)
+                            .addComponent(jTextFieldMsg)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelUser)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -128,7 +155,11 @@ public class MsgDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelGroup)
                     .addComponent(jComboBoxGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabelUser))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonOk)
                     .addComponent(jButtonCancel))
@@ -149,7 +180,13 @@ public class MsgDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this.getParent(), "Message is empty.");
             jTextFieldMsg.requestFocus();
         } else {
-            mMessage = new Message(null, new Post(jTextFieldMsg.getText(), null));
+            Post mPost = new Post(jTextFieldMsg.getText(), null);
+            if (reciever != null) {
+                mMessage = new Message(null, MessageHelper.buildPrivateMessage(mPost, jTextFieldMsg.getText()));
+            } else {
+                mMessage = new Message(null, mPost);
+            }
+            
             this.dispose();
         }
 
@@ -172,8 +209,10 @@ public class MsgDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonOk;
     private javax.swing.JComboBox jComboBoxGroup;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelGroup;
     private javax.swing.JLabel jLabelMsg;
+    private javax.swing.JLabel jLabelUser;
     private javax.swing.JTextField jTextFieldMsg;
     // End of variables declaration//GEN-END:variables
 }

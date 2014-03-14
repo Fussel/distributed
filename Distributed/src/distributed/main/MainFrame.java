@@ -6,6 +6,7 @@
 package distributed.main;
 
 import distributed.dao.Post;
+import distributed.dao.PrivateMessage;
 import distributed.msg.MsgDialog;
 import distributed.net.DistributedCore;
 import distributed.settings.SettingsDialog;
@@ -81,13 +82,30 @@ public class MainFrame extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jList1.getSelectedIndex() > -1) {
-                    showMessageDialog(((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex()));
+                    showMessageDialog(null, ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex()));
                 }
             }
         });
+        
+        JMenuItem jMenuItemDirectMessage = new javax.swing.JMenuItem();
+        jMenuItemDirectMessage.setText("Direct Message");
+        jMenuItemDirectMessage.addActionListener(new ActionListener() {
 
-        menu.add(jMenuItemShare);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (jList1.getSelectedIndex() > -1) {
+                    Message m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
+                    showMessageDialog(((Post)m.getObject()).getSender(), m);
+                }
+            }
+
+           
+        });
+
+        menu.add(jMenuItemDirectMessage);
         menu.add(new JPopupMenu.Separator());
+        menu.add(jMenuItemShare);
+        
         menu.show(evt.getComponent(), evt.getX(), evt.getY());
     }
 
@@ -248,7 +266,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonNewMsgMouseClicked
 
     private void jButtonNewMsgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNewMsgActionPerformed
-        showMessageDialog(null);
+        showMessageDialog(null, null);
     }//GEN-LAST:event_jButtonNewMsgActionPerformed
 
 
@@ -276,10 +294,11 @@ public class MainFrame extends javax.swing.JFrame {
         dialog.setVisible(true);
     }//GEN-LAST:event_jButtonAboutActionPerformed
 
-    private void showMessageDialog(Message message) {
+    private void showMessageDialog(String reciever, Message message) {
         JFrame rootWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
-        MsgDialog dialog = new MsgDialog(rootWindow, true, message);
-        if (message != null) {
+        MsgDialog dialog = new MsgDialog(rootWindow, true, message, reciever);
+        
+        if (message != null && reciever == null) {
             dialog.setTitle("Share Message");
         } else {
             dialog.setTitle("New Message");
@@ -350,7 +369,19 @@ public class MainFrame extends javax.swing.JFrame {
 
         @Override
         public String getElementAt(int index) {
-            return ((Post) messages.get(index).getObject()).getSender() + ": " + ((Post) messages.get(index).getObject()).getMessage();
+            Message m =  messages.get(index);
+            if (m.getObject() instanceof Post) {
+                   return "[" + ((Post) messages.get(index).getObject()).getPostDate() + "]" + ((Post) messages.get(index).getObject()).getSender() + ": " + ((Post) messages.get(index).getObject()).getMessage();
+            } else if (m.getObject() instanceof PrivateMessage) {
+                if (((PrivateMessage) m.getObject()).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
+                     return "PRIVATE [" + ((PrivateMessage) messages.get(index).getObject()).getSendDate() + "]" +((PrivateMessage) messages.get(index).getObject()).getSender() + ": " + ((PrivateMessage) messages.get(index).getObject()).getMessage();
+                } else {
+                    return "";
+                }
+            } else {
+                          return "FEHLER";  
+            }
+           
         }
 
         public void addElement(Message m) {
