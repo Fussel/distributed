@@ -3,13 +3,35 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package distributed.main;
 
+import distributed.dao.Post;
+import distributed.dao.PrivateMessage;
 import distributed.msg.MsgDialog;
+import distributed.net.DistributedCore;
+import distributed.settings.SettingsDialog;
 import distributed.user.AccessFrame;
+import distributed.util.DateUtils;
+import distributed.util.DistributedKrypto;
+import distributed.util.SettingsProvider;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.AbstractListModel;
+import javax.swing.Action;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import org.jgroups.Message;
 
 /**
  *
@@ -22,6 +44,72 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+
+        try {
+            DistributedCore.getInstance().configure(InetAddress.getByAddress(new byte[]{(byte) 192, (byte) 168, (byte) 178, (byte) 30}));
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        DistributedCore.getInstance().joinGroup("hanswurst");
+        jList1.setModel(new MyListModel(null));
+        jList1.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                showPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                showPopup(e);
+            }
+
+            private void showPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showMenu(e);
+                }
+            }
+        });
+
+        jLabel1.setText("Hello " + SettingsProvider.getInstance().getUserName() + "!");
+
+    }
+
+    public void showMenu(MouseEvent evt) {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem jMenuItemShare = new javax.swing.JMenuItem();
+        jMenuItemShare.setText("Share");
+        jMenuItemShare.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (jList1.getSelectedIndex() > -1) {
+                    showMessageDialog(null, ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex()));
+                }
+            }
+        });
+
+        JMenuItem jMenuItemDirectMessage = new javax.swing.JMenuItem();
+        jMenuItemDirectMessage.setText("Direct Message");
+        jMenuItemDirectMessage.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (jList1.getSelectedIndex() > -1) {
+                    Message m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
+                    if (m.getObject() instanceof Post) {
+                          showMessageDialog(((Post) m.getObject()).getSender(), m);
+                    } 
+                }
+            }
+
+        });
+
+        menu.add(jMenuItemDirectMessage);
+        menu.add(new JPopupMenu.Separator());
+        menu.add(jMenuItemShare);
+
+        menu.show(evt.getComponent(), evt.getX(), evt.getY());
     }
 
     /**
@@ -41,8 +129,8 @@ public class MainFrame extends javax.swing.JFrame {
         jButtonAbout = new javax.swing.JButton();
         jButtonSettings = new javax.swing.JButton();
         jButtonLogout = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -81,6 +169,11 @@ public class MainFrame extends javax.swing.JFrame {
         jButtonAbout.setMinimumSize(new java.awt.Dimension(100, 50));
         jButtonAbout.setPreferredSize(new java.awt.Dimension(75, 50));
         jButtonAbout.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButtonAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAboutActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButtonAbout);
 
         jButtonSettings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/distributed/icons/Options_32x32.png"))); // NOI18N
@@ -91,6 +184,11 @@ public class MainFrame extends javax.swing.JFrame {
         jButtonSettings.setMinimumSize(new java.awt.Dimension(100, 50));
         jButtonSettings.setPreferredSize(new java.awt.Dimension(75, 50));
         jButtonSettings.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButtonSettings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSettingsActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButtonSettings);
 
         jButtonLogout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/distributed/icons/Link_32x32.png"))); // NOI18N
@@ -113,27 +211,30 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(jButtonLogout);
 
-        jTextPane1.setDragEnabled(false);
-        jTextPane1.setEnabled(false);
-        jScrollPane1.setViewportView(jTextPane1);
+        jList1.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(jList1);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 618, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addComponent(jScrollPane1)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 618, Short.MAX_VALUE)
+            .addComponent(jScrollPane2)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addContainerGap())
@@ -160,20 +261,17 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonLogoutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonLogoutMouseClicked
-       
+
     }//GEN-LAST:event_jButtonLogoutMouseClicked
 
     private void jButtonNewMsgMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonNewMsgMouseClicked
- 
+
     }//GEN-LAST:event_jButtonNewMsgMouseClicked
 
     private void jButtonNewMsgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNewMsgActionPerformed
-        JFrame rootWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
-        MsgDialog dialog = new MsgDialog(rootWindow, true);
-        dialog.setTitle("New Message");
-        dialog.setLocationRelativeTo(rootWindow);
-        dialog.setVisible(true);
+        showMessageDialog(null, null);
     }//GEN-LAST:event_jButtonNewMsgActionPerformed
+
 
     private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
         this.setVisible(false);
@@ -182,6 +280,42 @@ public class MainFrame extends javax.swing.JFrame {
         mAccessFrame.setLocationRelativeTo(this);
         mAccessFrame.setVisible(true);
     }//GEN-LAST:event_jButtonLogoutActionPerformed
+
+    private void jButtonSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSettingsActionPerformed
+        JFrame rootWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
+        SettingsDialog dialog = new SettingsDialog(rootWindow, true);
+        dialog.setTitle("Settings");
+        dialog.setLocationRelativeTo(rootWindow);
+        dialog.setVisible(true);
+    }//GEN-LAST:event_jButtonSettingsActionPerformed
+
+    private void jButtonAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAboutActionPerformed
+        JFrame rootWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
+        AboutDialog dialog = new AboutDialog(rootWindow, true);
+        dialog.setTitle("About");
+        dialog.setLocationRelativeTo(rootWindow);
+        dialog.setVisible(true);
+    }//GEN-LAST:event_jButtonAboutActionPerformed
+
+    private void showMessageDialog(String reciever, Message message) {
+        JFrame rootWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
+        MsgDialog dialog = new MsgDialog(rootWindow, true, message, reciever);
+
+        if (message != null && reciever == null) {
+            dialog.setTitle("Share Message");
+        } else {
+            dialog.setTitle("New Message");
+        }
+
+        dialog.setLocationRelativeTo(rootWindow);
+        dialog.setVisible(true);
+
+        Message m = dialog.getMessage();
+        if (m != null) {
+            DistributedCore.getInstance().sendMessage(m);
+            ((MyListModel) jList1.getModel()).addElement(m);
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -212,10 +346,66 @@ public class MainFrame extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new MainFrame().setVisible(true);
             }
         });
+    }
+
+    class MyListModel extends AbstractListModel {
+
+        private ArrayList<Message> messages;
+
+        public MyListModel(ArrayList<Message> messages) {
+            if (messages != null) {
+                this.messages = messages;
+            } else {
+                this.messages = new ArrayList<>();
+            }
+        }
+
+        @Override
+        public int getSize() {
+            return messages.size();
+        }
+
+        @Override
+        public String getElementAt(int index) {
+            Message m = messages.get(index);
+            if (m.getObject() instanceof Post) {
+                return "[" + DateUtils.getTimeFormatAsString(((Post) messages.get(index).getObject()).getPostDate()) + "]" + ((Post) messages.get(index).getObject()).getSender() + ": " + ((Post) messages.get(index).getObject()).getMessage();
+            } else if (m.getObject() instanceof PrivateMessage) {
+                if (((PrivateMessage) m.getObject()).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
+                    PrivateMessage pm = ((PrivateMessage) messages.get(index).getObject());
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]"); 
+                    sb.append("von ").append(pm.getSender()).append(": ");
+                    sb.append(DistributedKrypto.getInstance().decryptMessage( pm.getMessage() )).append(" (privat)");
+                     return sb.toString();
+                }
+            }
+
+            return null;
+        }
+
+        public void addElement(Message m) {
+            messages.add(m);
+            this.fireContentsChanged(this, this.getSize(), messages.size());
+        }
+
+        public Message getMessageAt(int index) {
+            return (Message) messages.get(index);
+        }
+
+        public void clear() {
+            messages.clear();
+        }
+
+        public ArrayList<Message> getMessages() {
+            return messages;
+        }
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -225,9 +415,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButtonNewMsg;
     private javax.swing.JButton jButtonSettings;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 }

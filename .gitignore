@@ -16,9 +16,9 @@ build.properties
 *.class
 
 # Package Files #
-*.jar
 *.war
 *.ear
+<<<<<<< HEAD
 
 ### Java ###
 *.class
@@ -43,3 +43,5 @@ build.properties
 *.jar
 *.war
 *.ear
+=======
+>>>>>>> develop
