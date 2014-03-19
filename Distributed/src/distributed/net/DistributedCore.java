@@ -12,6 +12,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JList;
 import javax.swing.JTextPane;
 import org.jgroups.Address;
@@ -84,7 +86,16 @@ public class DistributedCore {
             //TODO Log the event
         }
     }
-
+      public void sendShareMessage(Message msg){
+          if(isLeader == true){
+            try {
+                groupChannel.send(msg);
+            } catch (Exception ex) {
+                Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
+            }
+          }
+        }
+      
     /**
      * Join the given group cluster. If no one else is in the cluster, the
      * cluster would be opened and the this client will become the leader of the
@@ -271,7 +282,7 @@ public class DistributedCore {
     }
 
     private class LeaderListener extends ReceiverAdapter {
-
+          
         @Override
         public void receive(Message msg) {
             super.receive(msg);
