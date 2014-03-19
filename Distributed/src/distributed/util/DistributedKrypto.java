@@ -214,7 +214,7 @@ public class DistributedKrypto {
             Cipher cipher;
             cipher = Cipher.getInstance(CIPHER_FORM);
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            return new String(cipher.doFinal());
+            return new String(cipher.doFinal(data));
         } catch(Exception e) {
             e.printStackTrace();
             return null;
