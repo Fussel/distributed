@@ -5,8 +5,6 @@
  */
 package distributed.main;
 
-import distributed.dao.Post;
-import distributed.dao.PrivateMessage;
 import distributed.msg.MsgDialog;
 import distributed.net.DistributedCore;
 import distributed.settings.SettingsDialog;
@@ -97,9 +95,10 @@ public class MainFrame extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (jList1.getSelectedIndex() > -1) {
                     Message m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
-                    if (m.getObject() instanceof Post) {
-                          showMessageDialog(((Post) m.getObject()).getSender(), m);
-                    } 
+                    //TODO Show dat message
+//                    if (m.getObject() instanceof Post) {
+//                          showMessageDialog(((Post) m.getObject()).getSender(), m);
+//                    } 
                 }
             }
 
@@ -373,18 +372,19 @@ public class MainFrame extends javax.swing.JFrame {
         @Override
         public String getElementAt(int index) {
             Message m = messages.get(index);
-            if (m.getObject() instanceof Post) {
-                return "[" + DateUtils.getTimeFormatAsString(((Post) messages.get(index).getObject()).getPostDate()) + "]" + ((Post) messages.get(index).getObject()).getSender() + ": " + ((Post) messages.get(index).getObject()).getMessage();
-            } else if (m.getObject() instanceof PrivateMessage) {
-                if (((PrivateMessage) m.getObject()).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
-                    PrivateMessage pm = ((PrivateMessage) messages.get(index).getObject());
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]"); 
-                    sb.append("von ").append(pm.getSender()).append(": ");
-                    sb.append(DistributedKrypto.getInstance().decryptMessage( pm.getMessage() )).append(" (privat)");
-                     return sb.toString();
-                }
-            }
+            //TODO Return the object
+//            if (m.getObject() instanceof Post) {
+//                return "[" + DateUtils.getTimeFormatAsString(((Post) messages.get(index).getObject()).getPostDate()) + "]" + ((Post) messages.get(index).getObject()).getSender() + ": " + ((Post) messages.get(index).getObject()).getMessage();
+//            } else if (m.getObject() instanceof PrivateMessage) {
+//                if (((PrivateMessage) m.getObject()).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
+//                    PrivateMessage pm = ((PrivateMessage) messages.get(index).getObject());
+//                    StringBuilder sb = new StringBuilder();
+//                    sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]"); 
+//                    sb.append("von ").append(pm.getSender()).append(": ");
+//                    sb.append(DistributedKrypto.getInstance().decryptMessage( pm.getMessage() )).append(" (privat)");
+//                     return sb.toString();
+//                }
+//            }
 
             return null;
         }

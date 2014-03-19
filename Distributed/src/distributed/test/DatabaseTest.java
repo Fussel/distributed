@@ -20,15 +20,15 @@ public class DatabaseTest {
     
     public static void main(String[] args) {
     
-        GroupMessage tmpPost1 = new GroupMessage("Test Message 1", DistributedKrypto.getInstance().getMyPublicKey());
-        GroupMessage tmpPost2 = new GroupMessage("Test Message 2", DistributedKrypto.getInstance().getMyPublicKey());
-        GroupMessage tmpPost3 = new GroupMessage("Test Message 3", DistributedKrypto.getInstance().getMyPublicKey());
+//        GroupMessage tmpPost1 = new GroupMessage("Test Message 1", DistributedKrypto.getInstance().getMyPublicKey());
+//        GroupMessage tmpPost2 = new GroupMessage("Test Message 2", DistributedKrypto.getInstance().getMyPublicKey());
+//        GroupMessage tmpPost3 = new GroupMessage("Test Message 3", DistributedKrypto.getInstance().getMyPublicKey());
     
         DatabaseManager manager = DatabaseManager.getInstance();
         
-        manager.insertPost(tmpPost1);
-        manager.insertPost(tmpPost2);
-        manager.insertPost(tmpPost3);
+//        manager.insertPost(tmpPost1);
+//        manager.insertPost(tmpPost2);
+//        manager.insertPost(tmpPost3);
         
         List<GroupMessage> posts = manager.loadPosts();
         

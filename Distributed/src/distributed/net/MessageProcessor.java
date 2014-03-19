@@ -5,8 +5,6 @@
  */
 package distributed.net;
 
-import distributed.dao.Post;
-import distributed.dao.PrivateMessage;
 import distributed.util.SettingsProvider;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -44,17 +42,19 @@ public class MessageProcessor extends Thread {
             try {
                 msg = jobQueue.take();
                 //TODO Do what ever the fuck you want
+                
+                //TODO Make use of the new Message types
 
-                if (msg.getObject() instanceof Address) {
-                    System.out.println("Leader is: " + (Address) msg.getObject());
-                } else if (msg.getObject() instanceof String) {
-                    processStringMessage(msg);
-                } else if (msg.getObject() instanceof Post) {
-                    System.out.println(SettingsProvider.getInstance().getUserName() + ": " + ((Post) msg.getObject()).getMessage());
-                    //Hier Callback fuer Mainframe!!
-                } else if (msg.getObject() instanceof PrivateMessage) {
-
-                }
+//                if (msg.getObject() instanceof Address) {
+//                    System.out.println("Leader is: " + (Address) msg.getObject());
+//                } else if (msg.getObject() instanceof String) {
+//                    processStringMessage(msg);
+//                } else if (msg.getObject() instanceof Post) {
+//                    System.out.println(SettingsProvider.getInstance().getUserName() + ": " + ((Post) msg.getObject()).getMessage());
+//                    //Hier Callback fuer Mainframe!!
+//                } else if (msg.getObject() instanceof PrivateMessage) {
+//
+//                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
