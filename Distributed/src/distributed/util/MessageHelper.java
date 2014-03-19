@@ -6,8 +6,8 @@
 
 package distributed.util;
 
-import distributed.dao.Post;
-import distributed.dao.PrivateMessage;
+import distributed.dto.GroupMessage;
+import distributed.dto.PrivateMessage;
 import org.jgroups.Message;
 
 /**
@@ -27,7 +27,7 @@ public class MessageHelper {
      *  with the public key of the post object.
      * @return 
      */
-    public static Message buildPrivateMessage(Post post, String msg) {
+    public static Message buildPrivateMessage(GroupMessage post, String msg) {
         byte[] encodedMessage = DistributedKrypto.getInstance().encryptString(msg, post.getKey());
         PrivateMessage message = new PrivateMessage(post.getSender(), encodedMessage);
         

@@ -6,7 +6,7 @@
 
 package distributed.msg;
 
-import distributed.dao.Post;
+import distributed.dto.GroupMessage;
 import distributed.net.DistributedCore;
 import javax.swing.JOptionPane;
 import org.jgroups.Message;
@@ -125,7 +125,7 @@ public class MsgDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this.getParent(), "Message is empty.");
             jTextFieldMsg.requestFocus();
         } else {
-            mMessage = new Message(null, new Post(jTextFieldMsg.getText(), null));
+            mMessage = new Message(null, new GroupMessage(jTextFieldMsg.getText(), null));
             this.dispose(); 
         }
 

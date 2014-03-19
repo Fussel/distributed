@@ -5,8 +5,8 @@
  */
 package distributed.net;
 
-import distributed.dao.Post;
-import distributed.dao.PrivateMessage;
+import distributed.dto.GroupMessage;
+import distributed.dto.PrivateMessage;
 import distributed.util.SettingsProvider;
 import java.util.ArrayList;
 import java.util.List;
