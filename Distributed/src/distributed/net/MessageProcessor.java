@@ -5,6 +5,7 @@
  */
 package distributed.net;
 
+import distributed.dto.*;
 import distributed.util.SettingsProvider;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -55,6 +56,14 @@ public class MessageProcessor extends Thread {
 //                } else if (msg.getObject() instanceof PrivateMessage) {
 //
 //                }
+                
+                if (msg.getObject() instanceof GroupMessage) {
+                    
+                } else if (msg.getObject() instanceof PrivateMessage) {
+                    // show content of message on your Anzeigetafel
+                    // (use GUI components)
+                    // (store in local database?)
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
