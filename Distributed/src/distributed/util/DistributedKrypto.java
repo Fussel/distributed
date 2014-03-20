@@ -9,15 +9,19 @@ package distributed.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.Cipher;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 /**
  *
@@ -220,4 +224,51 @@ public class DistributedKrypto {
             return null;
         }
     }  
+    
+    /**
+     * Converts a public key to a string for easy storing.
+     * 
+     * @param key The public key which should be converted to a string.
+     * @return The string representation of the public key.
+     */
+    public String publicKeyToString(PublicKey key) {
+        byte[] daBytes;
+        
+        daBytes = key.getEncoded();
+        BASE64Encoder encoder = new BASE64Encoder();
+        
+        return encoder.encode(daBytes);
+    }
+    
+    /**
+     * Converts a public key, which was decrypted as string
+     * back to a public key;
+     * 
+     * If there were problems while decoding the method will 
+     * return null.
+     * 
+     * @param keyBytes 
+     * @return 
+     */
+    public PublicKey StringToPublicKey(String publicKey) {
+        BASE64Decoder decoder = new BASE64Decoder();
+        byte[] daBytes;
+        
+        try {
+            daBytes = decoder.decodeBuffer(publicKey);
+            
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(daBytes);
+            KeyFactory keyFac = KeyFactory.getInstance(ALGORITHM);
+            return keyFac.generatePublic(keySpec);
+            //TODO Add logging
+        } catch(IOException io) {
+            
+        } catch(NoSuchAlgorithmException nsa) {
+            
+        } catch(InvalidKeySpecException iks) {
+            
+        }
+        
+        return null;
+    }
 }
