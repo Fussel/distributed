@@ -6,6 +6,7 @@
 package distributed.net;
 
 import distributed.dto.*;
+import distributed.main.MainFrame;
 import distributed.util.SettingsProvider;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -57,12 +58,27 @@ public class MessageProcessor extends Thread {
 //
 //                }
                 
-                if (msg.getObject() instanceof GroupMessage) {
-                    
+                if (msg.getObject() instanceof Address) {
+                    System.out.println("Leader is: " + (Address) msg.getObject());
+                } else if (msg.getObject() instanceof GroupMessage) {
+                    // TODO: handle group message
+                    // TODO: callback to MainFrame needed, see below
+                } else if (msg.getObject() instanceof String) {
+                    processStringMessage(msg);
                 } else if (msg.getObject() instanceof PrivateMessage) {
-                    // show content of message on your Anzeigetafel
-                    // (use GUI components)
-                    // (store in local database?)
+                    // TODO: store in local database?
+                    
+                    // extract both user name of the system and receiver name of the private message...
+                    String tmpUserName = DistributedCore.getInstance().getUserName();
+                    String tmpReceiver = ((PrivateMessage) (msg.getObject())).getReceiver();
+                    //... and compare both to see if message was meant for him
+                    if (tmpUserName.equals(tmpReceiver)) {
+                        // TODO: MessageProcessor needs reference/callback to MainFrame so that he can modify the MyListModel component to post messages
+                        // (possible solution: static method in MainFrame.java that writes messages into component?)
+                        //DistributedCore.getInstance().;
+                        
+                    }
+                    
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
