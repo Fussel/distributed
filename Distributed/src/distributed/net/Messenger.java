@@ -7,7 +7,10 @@
 package distributed.net;
 
 import distributed.dto.GroupMessage;
+import distributed.dto.IMessage;
 import distributed.dto.PrivateMessage;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -16,6 +19,7 @@ import distributed.dto.PrivateMessage;
 public class Messenger {
     
     private static Messenger instance;
+    private List<Messenger.MessageCallback> observers;
     
     public static Messenger getInstance() {
         if(instance != null)
@@ -24,16 +28,18 @@ public class Messenger {
         return instance;
     }
     
-    private void configure() {
-        
-    }
-    
     private Messenger()  {
         this.instance = new Messenger();
+        
+        this.observers = new ArrayList<Messenger.MessageCallback>();
     }
     
     
     public void addMessage(PrivateMessage msg) {
+        System.out.println("Messange received");
+        
+        //TODO Add to database
+        
         
     }
     
@@ -49,9 +55,12 @@ public class Messenger {
         
     }
     
+    public void addMessageListener(Messenger.MessageCallback callback) {
+        
+    }
+    
     public static interface MessageCallback {
-        void groupMessageReceived(GroupMessage msg);
-        void messageReceived(PrivateMessage msg);
+        void messageReceived(IMessage msg);
     }
     
     public static class UnconfiguredException extends RuntimeException {
