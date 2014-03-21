@@ -11,6 +11,7 @@ import distributed.dto.IMessage;
 import distributed.dto.PrivateMessage;
 import java.util.ArrayList;
 import java.util.List;
+import org.jgroups.Message;
 
 /**
  *
@@ -72,6 +73,9 @@ public class Messenger {
         //TODO Add to database
         
         //TODO Send dat shit
+        Message jMessage = new Message();
+        jMessage.setObject(msg);
+        DistributedCore.getInstance().sendMessage(jMessage);
     }
     
     /**
@@ -83,6 +87,9 @@ public class Messenger {
         //TODO Add to database
         
         //TODO Send that shit
+        Message jMessage = new Message();
+        jMessage.setObject(msg);
+        DistributedCore.getInstance().sendMessage(jMessage);
     }
     
     /**
