@@ -5,6 +5,7 @@
  */
 package distributed.msg;
 
+import distributed.dto.IMessage;
 import distributed.net.DistributedCore;
 import distributed.util.DistributedKrypto;
 import distributed.util.MessageHelper;
@@ -20,10 +21,10 @@ import org.jgroups.Message;
  */
 public class MsgDialog extends javax.swing.JDialog {
 
-    private Message mMessage;
+    private IMessage mMessage;
     private String reciever;
 
-    public MsgDialog(JFrame rootWindow, boolean b, Message message, String reciever) {
+    public MsgDialog(JFrame rootWindow, boolean b, IMessage message, String reciever) {
         super(rootWindow, b);
         initComponents();
 
@@ -43,11 +44,11 @@ public class MsgDialog extends javax.swing.JDialog {
 
     }
 
-    public Message getMessage() {
+    public IMessage getMessage() {
         return mMessage;
     }
 
-    public void setMessage(Message m) {
+    public void setMessage(IMessage m) {
         this.mMessage = m;
     }
 

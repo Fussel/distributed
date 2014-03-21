@@ -1,12 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package distributed.main;
 
+import distributed.dto.GroupMessage;
+import distributed.dto.IMessage;
+import distributed.dto.PrivateMessage;
+import distributed.main.AboutDialog;
 import distributed.msg.MsgDialog;
 import distributed.net.DistributedCore;
+import distributed.net.Messenger;
+import distributed.net.Messenger.MessageCallback;
 import distributed.settings.SettingsDialog;
 import distributed.user.AccessFrame;
 import distributed.util.DateUtils;
@@ -16,17 +17,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
-import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import org.jgroups.Message;
@@ -35,7 +33,7 @@ import org.jgroups.Message;
  *
  * @author kiefer
  */
-public class MainFrame extends javax.swing.JFrame {
+public class MainFrame extends javax.swing.JFrame implements MessageCallback {
 
     /**
      * Creates new form MainFrame
@@ -94,7 +92,7 @@ public class MainFrame extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jList1.getSelectedIndex() > -1) {
-                    Message m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
+                    IMessage m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
                     //TODO Show dat message
 //                    if (m.getObject() instanceof Post) {
 //                          showMessageDialog(((Post) m.getObject()).getSender(), m);
@@ -296,7 +294,7 @@ public class MainFrame extends javax.swing.JFrame {
         dialog.setVisible(true);
     }//GEN-LAST:event_jButtonAboutActionPerformed
 
-    private void showMessageDialog(String reciever, Message message) {
+    private void showMessageDialog(String reciever, IMessage message) {
         JFrame rootWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
         MsgDialog dialog = new MsgDialog(rootWindow, true, message, reciever);
 
@@ -309,10 +307,13 @@ public class MainFrame extends javax.swing.JFrame {
         dialog.setLocationRelativeTo(rootWindow);
         dialog.setVisible(true);
 
-        Message m = dialog.getMessage();
+        IMessage m = dialog.getMessage();
         if (m != null) {
-            DistributedCore.getInstance().sendMessage(m);
-            ((MyListModel) jList1.getModel()).addElement(m);
+            if (m instanceof PrivateMessage) {
+                Messenger.getInstance().sendMessage((PrivateMessage) m);
+            } else if (m instanceof GroupMessage) {
+                Messenger.getInstance().sendGroupMessage((GroupMessage) m);
+            }
         }
     }
 
@@ -352,16 +353,17 @@ public class MainFrame extends javax.swing.JFrame {
         });
     }
 
+    @Override
+    public void messageReceived(IMessage msg) {
+       ((MyListModel)jList1.getModel()).addElement(msg);
+    }
+
     class MyListModel extends AbstractListModel {
 
-        private ArrayList<Message> messages;
+        private final ArrayList<IMessage> messages;
 
-        public MyListModel(ArrayList<Message> messages) {
-            if (messages != null) {
-                this.messages = messages;
-            } else {
+        public MyListModel(ArrayList<IMessage> messages) {
                 this.messages = new ArrayList<>();
-            }
         }
 
         @Override
@@ -371,38 +373,40 @@ public class MainFrame extends javax.swing.JFrame {
 
         @Override
         public String getElementAt(int index) {
-            Message m = messages.get(index);
+            IMessage m = messages.get(index);
             //TODO Return the object
-//            if (m.getObject() instanceof Post) {
-//                return "[" + DateUtils.getTimeFormatAsString(((Post) messages.get(index).getObject()).getPostDate()) + "]" + ((Post) messages.get(index).getObject()).getSender() + ": " + ((Post) messages.get(index).getObject()).getMessage();
-//            } else if (m.getObject() instanceof PrivateMessage) {
-//                if (((PrivateMessage) m.getObject()).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
-//                    PrivateMessage pm = ((PrivateMessage) messages.get(index).getObject());
-//                    StringBuilder sb = new StringBuilder();
-//                    sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]"); 
-//                    sb.append("von ").append(pm.getSender()).append(": ");
-//                    sb.append(DistributedKrypto.getInstance().decryptMessage( pm.getMessage() )).append(" (privat)");
-//                     return sb.toString();
-//                }
-//            }
+            if (m instanceof GroupMessage) {
+                return DistributedKrypto.getInstance().decryptMessage(m.getMessage());
+                //return "[" + DateUtils.getTimeFormatAsString(((GroupMessage) messages.get(index).getSendDate()) + "]" + ((GroupMessage) messages.get(index).getSender() + ": " + ((GroupMessage) messages.get(index).getMessage() );
+            } else if (m instanceof GroupMessage) {
+                if (((PrivateMessage) m).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
+                    PrivateMessage pm = ((PrivateMessage) messages.get(index));
+                    StringBuilder sb;
+                    sb = new StringBuilder();
+                    sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]"); 
+                    sb.append("von ").append(pm.getSender()).append(": ");
+                    sb.append(DistributedKrypto.getInstance().decryptMessage( pm.getMessage() )).append(" (privat)");
+                     return sb.toString();
+                }
+            }
 
             return null;
         }
 
-        public void addElement(Message m) {
+        public void addElement(IMessage m) {
             messages.add(m);
             this.fireContentsChanged(this, this.getSize(), messages.size());
         }
 
-        public Message getMessageAt(int index) {
-            return (Message) messages.get(index);
+        public IMessage getMessageAt(int index) {
+            return (IMessage) messages.get(index);
         }
 
         public void clear() {
             messages.clear();
         }
 
-        public ArrayList<Message> getMessages() {
+        public ArrayList<IMessage> getMessages() {
             return messages;
         }
 
