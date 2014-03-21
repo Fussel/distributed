@@ -31,11 +31,11 @@ public class MsgDialog extends javax.swing.JDialog {
         initComponents();
 
         mMessage = message;
-        //TODO To do or not to do 
-//        if (message != null && (message.getObject() instanceof Post)) {
-//            jTextFieldMsg.setText(((Post) message.getObject()).getMessage());
-//            jComboBoxGroup.setEnabled(true);
-//        } 
+
+        if (message != null && (message instanceof GroupMessage)) {
+            jTextFieldMsg.setText(DistributedKrypto.getInstance().decryptMessage(message.getMessage()));
+            jComboBoxGroup.setEnabled(true);
+        } 
 
         if (reciever != null) {
             this.reciever = reciever;
