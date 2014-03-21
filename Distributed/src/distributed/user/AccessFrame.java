@@ -48,8 +48,10 @@ JFrame thisFrame;
         jPasswordFieldPassword = new javax.swing.JPasswordField();
         jTextArea1 = new javax.swing.JTextArea();
         jLabelGroup = new javax.swing.JLabel();
-        jComboBoxGroup = new javax.swing.JComboBox();
+        jComboBoxInterface = new javax.swing.JComboBox();
         jSeparator2 = new javax.swing.JSeparator();
+        jLabelInterface = new javax.swing.JLabel();
+        jTextFieldGroup = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -113,7 +115,12 @@ JFrame thisFrame;
         jLabelGroup.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelGroup.setText("Gruppe:");
 
-        jComboBoxGroup.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxInterface.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabelInterface.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabelInterface.setText("Interface:");
+
+        jTextFieldGroup.setText("hanswurst");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -132,12 +139,14 @@ JFrame thisFrame;
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelUser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabelPasswort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabelGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelInterface, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBoxGroup, 0, 188, Short.MAX_VALUE)
+                            .addComponent(jComboBoxInterface, 0, 188, Short.MAX_VALUE)
                             .addComponent(jPasswordFieldPassword)
-                            .addComponent(jTextFieldUsername)))
+                            .addComponent(jTextFieldUsername)
+                            .addComponent(jTextFieldGroup)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButtonCancel)
@@ -163,8 +172,12 @@ JFrame thisFrame;
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelGroup)
-                    .addComponent(jComboBoxGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                    .addComponent(jTextFieldGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxInterface, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelInterface))
+                .addGap(18, 18, 18)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -203,7 +216,7 @@ JFrame thisFrame;
             jButtonConnect.setEnabled(false);
             jTextFieldUsername.setEnabled(false);
             jPasswordFieldPassword.setEnabled(false);
-            jComboBoxGroup.setEnabled(false);
+            jComboBoxInterface.setEnabled(false);
             SettingsProvider.getInstance().storeUserName(jTextFieldUsername.getText());
            Thread t = new MyThread();
            t.start();
@@ -283,8 +296,9 @@ JFrame thisFrame;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonConnect;
-    private javax.swing.JComboBox jComboBoxGroup;
+    private javax.swing.JComboBox jComboBoxInterface;
     private javax.swing.JLabel jLabelGroup;
+    private javax.swing.JLabel jLabelInterface;
     private javax.swing.JLabel jLabelPasswort;
     private javax.swing.JLabel jLabelUser;
     private javax.swing.JLabel jLabelUserIcon;
@@ -293,6 +307,7 @@ JFrame thisFrame;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextFieldGroup;
     private javax.swing.JTextField jTextFieldUsername;
     // End of variables declaration//GEN-END:variables
 }

@@ -68,12 +68,14 @@
                               <Component id="jLabelUser" max="32767" attributes="0"/>
                               <Component id="jLabelPasswort" max="32767" attributes="0"/>
                               <Component id="jLabelGroup" max="32767" attributes="0"/>
+                              <Component id="jLabelInterface" alignment="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jComboBoxGroup" pref="188" max="32767" attributes="0"/>
+                              <Component id="jComboBoxInterface" pref="188" max="32767" attributes="0"/>
                               <Component id="jPasswordFieldPassword" max="32767" attributes="0"/>
                               <Component id="jTextFieldUsername" max="32767" attributes="0"/>
+                              <Component id="jTextFieldGroup" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
@@ -108,9 +110,14 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabelGroup" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jComboBoxGroup" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jTextFieldGroup" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="36" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jComboBoxInterface" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabelInterface" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jSeparator2" min="-2" pref="10" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -148,7 +155,7 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Verbinden"/>
             <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
-              <Color id="Default Cursor"/>
+              <Color id="Standardcursor"/>
             </Property>
           </Properties>
           <Events>
@@ -195,7 +202,7 @@
             <Property name="text" type="java.lang.String" value="Gruppe:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBoxGroup">
+        <Component class="javax.swing.JComboBox" name="jComboBoxInterface">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="4">
@@ -208,6 +215,17 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator2">
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabelInterface">
+          <Properties>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="Interface:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jTextFieldGroup">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="hanswurst"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>
