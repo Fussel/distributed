@@ -43,42 +43,23 @@ public class MessageProcessor extends Thread {
         while (isRunning) {
             try {
                 msg = jobQueue.take();
-                //TODO Do what ever the fuck you want
-                
-                //TODO Make use of the new Message types
-
-//                if (msg.getObject() instanceof Address) {
-//                    System.out.println("Leader is: " + (Address) msg.getObject());
-//                } else if (msg.getObject() instanceof String) {
-//                    processStringMessage(msg);
-//                } else if (msg.getObject() instanceof Post) {
-//                    System.out.println(SettingsProvider.getInstance().getUserName() + ": " + ((Post) msg.getObject()).getMessage());
-//                    //Hier Callback fuer Mainframe!!
-//                } else if (msg.getObject() instanceof PrivateMessage) {
-//
-//                }
-                
+                // handle incoming messages
                 if (msg.getObject() instanceof Address) {
                     System.out.println("Leader is: " + (Address) msg.getObject());
                 } else if (msg.getObject() instanceof GroupMessage) {
-                    // TODO: handle group message
-                    // TODO: callback to MainFrame needed, see below
+                    // TODO: store in local database
+                    Messenger.getInstance().addGroupMessage((GroupMessage) msg.getObject());
                 } else if (msg.getObject() instanceof String) {
                     processStringMessage(msg);
                 } else if (msg.getObject() instanceof PrivateMessage) {
-                    // TODO: store in local database?
-                    
+                    // TODO: store in local database
                     // extract both user name of the system and receiver name of the private message...
                     String tmpUserName = DistributedCore.getInstance().getUserName();
                     String tmpReceiver = ((PrivateMessage) (msg.getObject())).getReceiver();
                     //... and compare both to see if message was meant for him
                     if (tmpUserName.equals(tmpReceiver)) {
-                        // TODO: MessageProcessor needs reference/callback to MainFrame so that he can modify the MyListModel component to post messages
-                        // (possible solution: static method in MainFrame.java that writes messages into component?)
-                        //DistributedCore.getInstance().;
-                        
-                    }
-                    
+                        Messenger.getInstance().addMessage((PrivateMessage) msg.getObject());                      
+                    }                   
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
