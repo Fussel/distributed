@@ -6,25 +6,36 @@
 package distributed.user;
 
 import distributed.main.MainFrame;
+import distributed.util.IpAdressAdapter;
 import distributed.util.SettingsProvider;
-import java.awt.event.KeyEvent;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 /**
  *
  * @author kiefer
  */
 public class AccessFrame extends javax.swing.JFrame {
-JFrame thisFrame;
+
+    JFrame thisFrame;
+    private ArrayList<String> ipList;
+
     /**
      * Creates new form LoginFrame
      */
     public AccessFrame() {
-        initComponents();
         
-       thisFrame = this;
+        getIpList(); //get the ip list in ipList
+        initComponents();
+        for (int i = 0; i < ipList.size(); i++){ //fill combobox
+            jComboBoxInterface.addItem(ipList.get(i));
+        }
+
+        thisFrame = this;
         jTextFieldUsername.setText(SettingsProvider.getInstance().getUserName());
     }
 
@@ -115,7 +126,11 @@ JFrame thisFrame;
         jLabelGroup.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelGroup.setText("Gruppe:");
 
-        jComboBoxInterface.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxInterface.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxInterfaceActionPerformed(evt);
+            }
+        });
 
         jLabelInterface.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelInterface.setText("Interface:");
@@ -211,6 +226,7 @@ JFrame thisFrame;
             JOptionPane.showMessageDialog(this.getParent(), "Username is empty.");
             jTextFieldUsername.requestFocus();
         } else {
+
             jButtonConnect.setText("Verbinde...");
             jButtonCancel.setEnabled(false);
             jButtonConnect.setEnabled(false);
@@ -218,8 +234,8 @@ JFrame thisFrame;
             jPasswordFieldPassword.setEnabled(false);
             jComboBoxInterface.setEnabled(false);
             SettingsProvider.getInstance().storeUserName(jTextFieldUsername.getText());
-           Thread t = new MyThread();
-           t.start();
+            Thread t = new MyThread();
+            t.start();
         }
     }//GEN-LAST:event_jButtonConnectMouseClicked
 
@@ -243,6 +259,11 @@ JFrame thisFrame;
     private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonCancelActionPerformed
+
+    private void jComboBoxInterfaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxInterfaceActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jComboBoxInterfaceActionPerformed
 
     /**
      * @param args the command line arguments
@@ -277,11 +298,25 @@ JFrame thisFrame;
         });
     }
 
+    public final void getIpList() {
+        IpAdressAdapter ipAdapter = new IpAdressAdapter();
+        try {
+            ipList = ipAdapter.getNetworkInterfaces();
+            for (String ip : ipList) {
+                System.out.println("Active Ip = " + ip);
+            }
+
+        } catch (SocketException ex) {
+            Logger.getLogger(AccessFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+
     public class MyThread extends Thread {
 
         @Override
         public void run() {
-             //Wenn es ihm erlaubt starte MainFrame
+            //Wenn es ihm erlaubt starte MainFrame
             MainFrame mMainFrame = new MainFrame();
             //Setzt das Fenster relativ zu diesem Frame
             mMainFrame.setLocationRelativeTo(thisFrame);
@@ -289,8 +324,7 @@ JFrame thisFrame;
 
             thisFrame.setVisible(false);
         }
-        
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
