@@ -17,7 +17,6 @@ import java.io.Serializable;
 public class PrivateMessage extends IMessage implements Serializable {
 
     public static final String TABLE_NAME       = "private_message";
-    
     public static final String COL_NAME_RECIVER = "recivier";
     
     @DatabaseField(columnName = COL_NAME_RECIVER)

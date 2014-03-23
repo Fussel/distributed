@@ -20,30 +20,32 @@ import java.security.PublicKey;
 public class GroupMessage extends IMessage implements Serializable {
     
     public static final String TABLE_NAME           = "group_message";
-    
     public final static String COL_NAME_PUBLIC_KEY  = "public_key";
 
     
-    @DatabaseField(dataType = DataType.SERIALIZABLE, columnName = COL_NAME_PUBLIC_KEY)
-    private PublicKey key;
+    @DatabaseField(columnName = COL_NAME_PUBLIC_KEY)
+    private String key;
 
 
     public GroupMessage() {
         //needed by ORMLite
     }
         
-    public GroupMessage(PublicKey key, byte[] message) {
-        super("", message);
+    public GroupMessage(String key, String message) {
+        super("", message.getBytes());
         this.key = key;
         //TODO Set sender prop      
     }
 
-    public PublicKey getKey() {
+    public String getKey() {
         return key;
     }
 
-    public void setKey(PublicKey key) {
+    public void setKey(String key) {
         this.key = key;
     }
-
+    
+//    public String getMessage() {
+//        return new String()
+//    }
 }

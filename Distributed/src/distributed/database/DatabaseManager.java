@@ -19,6 +19,8 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -28,9 +30,11 @@ public class DatabaseManager {
     
     private static DatabaseManager instance;
     
+    private static final Logger log = Logger.getLogger(DatabaseManager.class.getName());
+    
     private Dao<User, String> userDao;
-    private Dao<GroupMessage, Integer> postDao;
-    private Dao<PrivateMessage, Integer> privateMessageDao;
+    private Dao<GroupMessage, UUID> postDao;
+    private Dao<PrivateMessage, UUID> privateMessageDao;
     
     private ConnectionSource connection;
     private static final String DATABASE_DRIVER = "jdbc:sqlite:";
@@ -47,7 +51,9 @@ public class DatabaseManager {
             Class.forName("org.sqlite.JDBC");
             
             String databasePath = SettingsProvider.getInstance().getRootDir();
-            databasePath = "/Users/ygraf/test.db";//databasePath.concat(SettingsProvider.getInstance().getDBDir());
+            databasePath = "/home/steffen/test.db";
+
+            //databasePath.concat(SettingsProvider.getInstance().getDBDir());
             
             //File dbPath = new File(databasePath);
             //if(!dbPath.exists())
@@ -62,7 +68,7 @@ public class DatabaseManager {
             initDatabase();
             
         } catch(Exception e) {
-            System.out.println("IN CONSTRUCTOR: " + e);
+            log.error("IN CONSTRUCTOR: " + e);
         }
     }
     
@@ -71,31 +77,34 @@ public class DatabaseManager {
         Class[] classes = {PrivateMessage.class, GroupMessage.class, User.class}; 
         
         try {
-        
             for (Class tmpClass : classes) {
-                System.out.println("KNOCK KNOCK");
                 TableUtils.createTableIfNotExists(connection, tmpClass);
             }
         
         } catch (SQLException sqlEx) {
-            System.out.println("IN INITDATABASE: " + sqlEx);
+            log.error("IN INITDATABASE: " + sqlEx);
         }
         
     } 
     
-    
-    public boolean insertPost(GroupMessage post) {
-        
-        boolean result = false;
+    public void insertPrivateMessage(PrivateMessage msg) {
         
         try {
+            privateMessageDao.createIfNotExists(msg);
+        } catch(SQLException sql) {
+            log.error("Cannot add private message");
+        }
+    }
+    
+    public void insertPost(GroupMessage post) {
+        
+        try {
+            System.out.println("insert");
             postDao.createIfNotExists(post);
         } catch (SQLException sqlEx) {
-           System.out.println("IN INSERT: " + sqlEx);
-        }
-        
-        return result;
-        
+            System.out.println(sqlEx.getMessage());
+            log.error("IN INSERT: " + sqlEx);
+        }     
     }
     
     public List<GroupMessage> loadPosts() {
@@ -105,15 +114,14 @@ public class DatabaseManager {
         try {
             posts = postDao.queryForAll();
         } catch (SQLException sqlEx) {
-            System.out.println("IN LOAD: " + sqlEx);
+            log.error("IN LOAD: " + sqlEx);
         }
+        return posts;       
+    } 
+    
+    public List<PrivateMessage> getMyPrivateMessages() {
+        List<PrivateMessage> msg = new ArrayList();
         
-        return posts;
-        
+        return msg;
     }
-    
-    
-    
-    
-    
 }

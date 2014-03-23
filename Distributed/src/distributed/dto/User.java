@@ -16,7 +16,7 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "user")
 public class User {
     
-    
+    //Id will be the string representation of the public key of the user
     public static final String COL_NAME_ID      = "id";
     public static final String COL_NAME_NAME    = "name";
     

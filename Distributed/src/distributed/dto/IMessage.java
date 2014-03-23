@@ -9,8 +9,10 @@ package distributed.dto;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.UUID;
 
 /**
  *
@@ -21,15 +23,19 @@ public class IMessage implements Serializable{
     public static final String COL_NAME_DATE    = "send_date";
     public static final String COL_NAME_SENDER  = "sender";
     public static final String COL_NAME_MESSAGE = "message";
+    public static final String COL_NAME_DIRTY   = "dirty_bit";
+    public static final String COL_NAME_ID      = "id";
     
-    @DatabaseField()
-    private String  messageUUID;
+    @DatabaseField(id=true)
+    private UUID  messageUUID;
     @DatabaseField(columnName = COL_NAME_DATE)
-    private Date    sendDate;
+    private long    sendDate;
     @DatabaseField(columnName = COL_NAME_SENDER)
     private String  sender;
     @DatabaseField(columnName = COL_NAME_MESSAGE, dataType = DataType.BYTE_ARRAY)
     private byte[]  message;
+    @DatabaseField(columnName = COL_NAME_DIRTY)
+    private boolean dirtyBit;
     
     
     public IMessage() {
@@ -37,18 +43,21 @@ public class IMessage implements Serializable{
     }
     
     public IMessage(String sender, byte[] message) {
-        this.sendDate   = GregorianCalendar.getInstance().getTime();
-        this.sender     = sender;
-        this.message    = message;
+        this.sendDate       = System.currentTimeMillis();
+        this.sender         = sender;
+        this.message        = message;
+        this.messageUUID    = UUID.randomUUID();
     }
 
     
     public Date getSendDate() {
-        return sendDate;
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTimeInMillis(sendDate);      
+        return cal.getTime();
     }
 
     public void setSendDate(Date sendDate) {
-        this.sendDate = sendDate;
+        this.sendDate = sendDate.getTime();
     }
 
     public String getSender() {
@@ -65,6 +74,5 @@ public class IMessage implements Serializable{
 
     public void setMessage(byte[] message) {
         this.message = message;
-    }
-    
+    }    
 }
