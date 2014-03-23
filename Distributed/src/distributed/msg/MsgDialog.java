@@ -188,7 +188,8 @@ public class MsgDialog extends javax.swing.JDialog {
             if (reciever != null) {
                 mMessage = new PrivateMessage(reciever, DistributedKrypto.getInstance().encryptString(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
             } else {
-                mMessage = new GroupMessage(DistributedKrypto.getInstance().getMyPublicKey(), DistributedKrypto.getInstance().encryptString(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
+                mMessage = new GroupMessage(DistributedKrypto.getInstance().publicKeyToString(DistributedKrypto.getInstance().getMyPublicKey()),
+                        jTextFieldMsg.getText());
             }
 
             this.dispose();
