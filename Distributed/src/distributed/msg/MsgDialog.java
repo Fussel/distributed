@@ -5,7 +5,9 @@
  */
 package distributed.msg;
 
+import distributed.dto.GroupMessage;
 import distributed.dto.IMessage;
+import distributed.dto.PrivateMessage;
 import distributed.net.DistributedCore;
 import distributed.util.DistributedKrypto;
 import distributed.util.MessageHelper;
@@ -29,11 +31,11 @@ public class MsgDialog extends javax.swing.JDialog {
         initComponents();
 
         mMessage = message;
-        //TODO To do or not to do 
-//        if (message != null && (message.getObject() instanceof Post)) {
-//            jTextFieldMsg.setText(((Post) message.getObject()).getMessage());
-//            jComboBoxGroup.setEnabled(true);
-//        } 
+
+        if (message != null && (message instanceof GroupMessage)) {
+            jTextFieldMsg.setText(DistributedKrypto.getInstance().decryptMessage(message.getMessage()));
+            jComboBoxGroup.setEnabled(true);
+        } 
 
         if (reciever != null) {
             this.reciever = reciever;
@@ -183,12 +185,11 @@ public class MsgDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this.getParent(), "Message is empty.");
             jTextFieldMsg.requestFocus();
         } else {
-            //TODO
-//            if (reciever != null) {
-//                mMessage = MessageHelper.buildPrivateMessage((Post)mMessage.getObject(), jTextFieldMsg.getText());
-//            } else {
-//                mMessage = new Message(null, new Post(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
-//            }
+            if (reciever != null) {
+                mMessage = new PrivateMessage(reciever, DistributedKrypto.getInstance().encryptString(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
+            } else {
+                mMessage = new GroupMessage(DistributedKrypto.getInstance().getMyPublicKey(), DistributedKrypto.getInstance().encryptString(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
+            }
 
             this.dispose();
         }

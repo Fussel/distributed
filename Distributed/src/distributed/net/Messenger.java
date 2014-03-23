@@ -23,15 +23,14 @@ public class Messenger {
     private List<Messenger.MessageCallback> observers;
     
     public static Messenger getInstance() {
-        if(instance != null)
+        if(instance == null) {
             instance = new Messenger();
+        }
         
         return instance;
     }
     
-    private Messenger()  {
-        this.instance = new Messenger();
-        
+    private Messenger()  {  
         this.observers = new ArrayList<Messenger.MessageCallback>();
     }
     

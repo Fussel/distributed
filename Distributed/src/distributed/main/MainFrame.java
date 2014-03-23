@@ -18,8 +18,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
@@ -34,38 +38,63 @@ import org.jgroups.Message;
  * @author kiefer
  */
 public class MainFrame extends javax.swing.JFrame implements MessageCallback {
-
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
-
+       
+        //Vereinfachung fuer das Testen
+        InetAddress testIP = null;
         try {
-            DistributedCore.getInstance().configure(InetAddress.getByAddress(new byte[]{(byte) 192, (byte) 168, (byte) 178, (byte) 30}));
+            testIP = InetAddress.getLocalHost();
         } catch (UnknownHostException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        DistributedCore.getInstance().joinGroup("hanswurst");
-        jList1.setModel(new MyListModel(null));
-        jList1.addMouseListener(new MouseAdapter() {
+        System.out.println("IP: " + testIP.getHostAddress());
+        
+        
+        //TODO in AccesFrame -> Combobox laden (bitte mit CustomModell damit Objekte dadrin gespeichert werden koennen)
+         Enumeration nifEnm;
+        try {
+            nifEnm = NetworkInterface.getNetworkInterfaces();
+             while(nifEnm.hasMoreElements())
+          {
+               System.out.println(nifEnm.nextElement());
+          }
+        } catch (SocketException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
+        Messenger.getInstance().addMessageListener(this);
+        DistributedCore.getInstance().configure(testIP);
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-                showPopup(e);
-            }
+        DistributedCore.getInstance()
+                .joinGroup("hanswurst");
+        jList1.setModel(
+                new MyListModel(null));
+        jList1.addMouseListener(
+                new MouseAdapter() {
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                showPopup(e);
-            }
+                    @Override
+                    public void mousePressed(MouseEvent e
+                    ) {
+                        showPopup(e);
+                    }
 
-            private void showPopup(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    showMenu(e);
+                    @Override
+                    public void mouseReleased(MouseEvent e
+                    ) {
+                        showPopup(e);
+                    }
+
+                    private void showPopup(MouseEvent e) {
+                        if (e.isPopupTrigger()) {
+                            showMenu(e);
+                        }
+                    }
                 }
-            }
-        });
+        );
 
         jLabel1.setText("Hello " + SettingsProvider.getInstance().getUserName() + "!");
 
@@ -93,10 +122,9 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
             public void actionPerformed(ActionEvent e) {
                 if (jList1.getSelectedIndex() > -1) {
                     IMessage m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
-                    //TODO Show dat message
-//                    if (m.getObject() instanceof Post) {
-//                          showMessageDialog(((Post) m.getObject()).getSender(), m);
-//                    } 
+                    if (m instanceof GroupMessage) {
+                        showMessageDialog(((GroupMessage) m).getSender(), m);
+                    }
                 }
             }
 
@@ -312,8 +340,10 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
             if (m instanceof PrivateMessage) {
                 Messenger.getInstance().sendMessage((PrivateMessage) m);
             } else if (m instanceof GroupMessage) {
-                Messenger.getInstance().sendGroupMessage((GroupMessage) m);
+                Messenger.getInstance().addGroupMessage((GroupMessage) m);
             }
+        } else {
+            System.out.println("Keine Nachricht übergeben.");
         }
     }
 
@@ -331,16 +361,21 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -355,7 +390,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
 
     @Override
     public void messageReceived(IMessage msg) {
-       ((MyListModel)jList1.getModel()).addElement(msg);
+        ((MyListModel) jList1.getModel()).addElement(msg);
     }
 
     class MyListModel extends AbstractListModel {
@@ -363,7 +398,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
         private final ArrayList<IMessage> messages;
 
         public MyListModel(ArrayList<IMessage> messages) {
-                this.messages = new ArrayList<>();
+            this.messages = new ArrayList<>();
         }
 
         @Override
@@ -375,18 +410,20 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
         public String getElementAt(int index) {
             IMessage m = messages.get(index);
             //TODO Return the object
+            StringBuilder sb = new StringBuilder();
             if (m instanceof GroupMessage) {
-                return DistributedKrypto.getInstance().decryptMessage(m.getMessage());
-                //return "[" + DateUtils.getTimeFormatAsString(((GroupMessage) messages.get(index).getSendDate()) + "]" + ((GroupMessage) messages.get(index).getSender() + ": " + ((GroupMessage) messages.get(index).getMessage() );
+                GroupMessage gm = ((GroupMessage) messages.get(index)); 
+                sb.append("[").append(DateUtils.getTimeFormatAsString(gm.getSendDate())).append("]");
+                sb.append("von ").append(gm.getSender()).append(": ");
+                sb.append(DistributedKrypto.getInstance().decryptMessage(gm.getMessage()));
+                return sb.toString();
             } else if (m instanceof GroupMessage) {
                 if (((PrivateMessage) m).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
-                    PrivateMessage pm = ((PrivateMessage) messages.get(index));
-                    StringBuilder sb;
-                    sb = new StringBuilder();
-                    sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]"); 
+                    PrivateMessage pm = ((PrivateMessage) messages.get(index)); 
+                    sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]");
                     sb.append("von ").append(pm.getSender()).append(": ");
-                    sb.append(DistributedKrypto.getInstance().decryptMessage( pm.getMessage() )).append(" (privat)");
-                     return sb.toString();
+                    sb.append(DistributedKrypto.getInstance().decryptMessage(pm.getMessage())).append(" (privat)");
+                    return sb.toString();
                 }
             }
 

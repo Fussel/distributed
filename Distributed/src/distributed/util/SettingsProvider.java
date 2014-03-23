@@ -88,9 +88,12 @@ public class SettingsProvider {
      * 
      */
     public void storeRootDirectory(String rootDirectory) {
-        //TODO check if the root dir is already set. if so all files must be copied.
-        props.setProperty(ROOT_DIR, rootDirectory);
-        writePropertyChanges();
+        //check if the root dir is already set. if so all files must be copied.
+        String path = (String) props.get(ROOT_DIR);
+        if(path == null || path.isEmpty()){
+            props.setProperty(ROOT_DIR, rootDirectory);
+            writePropertyChanges();
+        }
     }
        
     public String getUserName() {

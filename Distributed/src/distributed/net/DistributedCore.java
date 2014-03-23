@@ -63,6 +63,10 @@ public class DistributedCore {
 
         return instance;
     }
+    
+    public String getUserName() {
+        return userName;
+    }
 
     private DistributedCore() {
         moderator = false;

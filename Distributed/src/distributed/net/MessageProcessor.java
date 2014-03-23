@@ -5,6 +5,8 @@
  */
 package distributed.net;
 
+import distributed.dto.*;
+import distributed.main.MainFrame;
 import distributed.util.SettingsProvider;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -41,20 +43,24 @@ public class MessageProcessor extends Thread {
         while (isRunning) {
             try {
                 msg = jobQueue.take();
-                //TODO Do what ever the fuck you want
-                
-                //TODO Make use of the new Message types
-
-//                if (msg.getObject() instanceof Address) {
-//                    System.out.println("Leader is: " + (Address) msg.getObject());
-//                } else if (msg.getObject() instanceof String) {
-//                    processStringMessage(msg);
-//                } else if (msg.getObject() instanceof Post) {
-//                    System.out.println(SettingsProvider.getInstance().getUserName() + ": " + ((Post) msg.getObject()).getMessage());
-//                    //Hier Callback fuer Mainframe!!
-//                } else if (msg.getObject() instanceof PrivateMessage) {
-//
-//                }
+                // handle incoming messages
+                if (msg.getObject() instanceof Address) {
+                    System.out.println("Leader is: " + (Address) msg.getObject());
+                } else if (msg.getObject() instanceof GroupMessage) {
+                    // TODO: store in local database
+                    Messenger.getInstance().addGroupMessage((GroupMessage) msg.getObject());
+                } else if (msg.getObject() instanceof String) {
+                    processStringMessage(msg);
+                } else if (msg.getObject() instanceof PrivateMessage) {
+                    // TODO: store in local database
+                    // extract both user name of the system and receiver name of the private message...
+                    String tmpUserName = DistributedCore.getInstance().getUserName();
+                    String tmpReceiver = ((PrivateMessage) (msg.getObject())).getReceiver();
+                    //... and compare both to see if message was meant for him
+                    if (tmpUserName.equals(tmpReceiver)) {
+                        Messenger.getInstance().addMessage((PrivateMessage) msg.getObject());                      
+                    }                   
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
