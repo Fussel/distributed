@@ -28,7 +28,8 @@ public class MessageHelper {
      * @return 
      */
     public static Message buildPrivateMessage(GroupMessage post, String msg) {
-        byte[] encodedMessage = DistributedKrypto.getInstance().encryptString(msg, post.getKey());
+        byte[] encodedMessage = DistributedKrypto.getInstance().encryptString(msg, 
+                DistributedKrypto.getInstance().StringToPublicKey(post.getKey()));
         PrivateMessage message = new PrivateMessage(post.getSender(), encodedMessage);
         
         return new Message(null, message);
