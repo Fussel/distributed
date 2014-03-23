@@ -415,7 +415,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
                 GroupMessage gm = ((GroupMessage) messages.get(index)); 
                 sb.append("[").append(DateUtils.getTimeFormatAsString(gm.getSendDate())).append("]");
                 sb.append("von ").append(gm.getSender()).append(": ");
-                sb.append(DistributedKrypto.getInstance().decryptMessage(gm.getMessage()));
+                sb.append(new String(gm.getMessage()));
                 return sb.toString();
             } else if (m instanceof GroupMessage) {
                 if (((PrivateMessage) m).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
