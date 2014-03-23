@@ -6,6 +6,7 @@
 
 package distributed.net;
 
+import distributed.database.DatabaseManager;
 import distributed.dto.GroupMessage;
 import distributed.dto.IMessage;
 import distributed.dto.PrivateMessage;
@@ -40,9 +41,8 @@ public class Messenger {
      * @param msg The private message which was received. 
      */
     public void addMessage(PrivateMessage msg) {
-        System.out.println("Messange received");
         
-        //TODO Add to database
+        DatabaseManager.getInstance().insertPrivateMessage(msg);
         
         for(Messenger.MessageCallback o: observers) {
             o.messageReceived(msg);
@@ -56,7 +56,7 @@ public class Messenger {
      */
     public void addGroupMessage(GroupMessage msg) {
         
-        //TODO Add to database
+        DatabaseManager.getInstance().insertPost(msg);
         
         for(Messenger.MessageCallback o: observers)  {
             o.messageReceived(msg);
@@ -69,9 +69,7 @@ public class Messenger {
      * @param msg The message to send 
      */
     public void sendMessage(PrivateMessage msg) {
-        //TODO Add to database
-        
-        //TODO Send dat shit
+        DatabaseManager.getInstance().insertPrivateMessage(msg);
         Message jMessage = new Message();
         jMessage.setObject(msg);
         DistributedCore.getInstance().sendMessage(jMessage);
@@ -83,9 +81,7 @@ public class Messenger {
      * @param msg The message to send. 
      */
     public void sendGroupMessage(GroupMessage msg) {
-        //TODO Add to database
-        
-        //TODO Send that shit
+        DatabaseManager.getInstance().insertPost(msg);
         Message jMessage = new Message();
         jMessage.setObject(msg);
         DistributedCore.getInstance().sendMessage(jMessage);
