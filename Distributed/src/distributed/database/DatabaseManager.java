@@ -51,15 +51,15 @@ public class DatabaseManager {
             Class.forName("org.sqlite.JDBC");
             
             String databasePath = SettingsProvider.getInstance().getRootDir();
-            databasePath = "/home/steffen/test.db";
-
-            //databasePath.concat(SettingsProvider.getInstance().getDBDir());
+       
+            databasePath += SettingsProvider.getInstance().getDBDir();
             
-            //File dbPath = new File(databasePath);
-            //if(!dbPath.exists())
-             //   dbPath.mkdir();
+            File dbPath = new File(databasePath);
             
-            connection = new JdbcConnectionSource(DATABASE_DRIVER + databasePath);
+            if(!dbPath.exists())
+                dbPath.mkdir();         
+            
+            connection = new JdbcConnectionSource(DATABASE_DRIVER + SettingsProvider.getInstance().getCanonicalDatabaseFile());
             
             userDao = DaoManager.createDao(connection, User.class);
             postDao = DaoManager.createDao(connection, GroupMessage.class);
