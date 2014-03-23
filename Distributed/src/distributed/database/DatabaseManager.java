@@ -107,6 +107,12 @@ public class DatabaseManager {
         }     
     }
     
+    /**
+     * Loads all GroupMessages in the database and returns them 
+     * in a list.
+     * 
+     * @return All GroupMessages in the database. 
+     */
     public List<GroupMessage> loadPosts() {
     
         List<GroupMessage> posts = new ArrayList();
@@ -116,12 +122,42 @@ public class DatabaseManager {
         } catch (SQLException sqlEx) {
             log.error("IN LOAD: " + sqlEx);
         }
+        
         return posts;       
     } 
     
+    /**
+     * Returns the count of all GroupMessage objects in the 
+     * database. If an error occurs it returns -1.
+     * 
+     * @return The count of all GroupMessage objects, -1 if an 
+     *      error occur
+     */
+    public long getGroupMessageCount() {
+        try {
+            return postDao.countOf();
+        } catch(SQLException sql) {
+            log.error(sql);
+        }
+        return -1;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public long getPrivateMessageCount() {
+        try {
+            return privateMessageDao.countOf();
+        } catch(SQLException sql) {
+            log.error(sql);
+        }
+        return -1;
+    }
+    
     public List<PrivateMessage> getMyPrivateMessages() {
         List<PrivateMessage> msg = new ArrayList();
-        
+        //TODO
         return msg;
     }
 }
