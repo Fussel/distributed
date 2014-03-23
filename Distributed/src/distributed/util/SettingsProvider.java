@@ -73,7 +73,7 @@ public class SettingsProvider {
     
     private void checkValues() {
         if(props.getProperty(ROOT_DIR) == null)
-            props.setProperty(ROOT_DIR, System.getProperty("user.home"));
+            props.setProperty(ROOT_DIR, System.getProperty("user.home") + "/Distributed");
         
         if(props.getProperty(DB_DIR) == null)
             props.setProperty(DB_DIR, C_DB_DIR);
