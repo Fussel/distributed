@@ -84,6 +84,12 @@ public class SettingsProvider {
         if(props.getProperty(KEY_DIR) == null)
             props.setProperty(KEY_DIR, C_KEY_DIR);
         
+        if(props.getProperty(PUB_KEY) == null)
+            props.setProperty(PUB_KEY, C_PUB_KEY);
+        
+        if(props.getProperty(PRI_KEY) == null)
+            props.setProperty(PRI_KEY, C_PRI_KEY);
+        
         writePropertyChanges();
     }
     
@@ -159,7 +165,7 @@ public class SettingsProvider {
         return props.getProperty(PUB_KEY, null);
     }
     
-    public String getPrivateKeyDir() {
+    public String getPrivateKeyName() {
         return props.getProperty(PRI_KEY, null);
     }
     

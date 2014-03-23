@@ -34,12 +34,10 @@ public class DistributedKrypto {
     private static final String ALGORITHM = "RSA";
     private static final int KEY_LENGHT = 1024;
     
-    private static final String PRIVATE_FILE = "private.key";
-    private static final String PUBLIC_FILE = "public.key";
+    private final String PRIVATE_FILE;
+    private final String PUBLIC_FILE;
     //TODO Auslagern des BaseDirs
-    private static final String DIR = System.getProperty("user.home") +
-            System.getProperty("file.separator") + "Distributed" 
-            + System.getProperty("file.separator");
+    private final String DIR;
     
     private PrivateKey privateKey;
     private PublicKey publicKey;
@@ -56,6 +54,12 @@ public class DistributedKrypto {
     
     private DistributedKrypto() {
         File privateFile, publicFile;
+        
+        DIR = SettingsProvider.getInstance().getRootDir() + 
+                SettingsProvider.getInstance().getKeyDir();
+        
+        PRIVATE_FILE = SettingsProvider.getInstance().getPrivateKeyName();
+        PUBLIC_FILE = SettingsProvider.getInstance().getPublicKeyName();
         
         privateFile = new File(DIR + PRIVATE_FILE);
         publicFile = new File(DIR + PUBLIC_FILE);
