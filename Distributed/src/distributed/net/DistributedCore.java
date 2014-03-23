@@ -5,7 +5,6 @@
  */
 package distributed.net;
 
-import distributed.dao.Post;
 import distributed.util.SettingsProvider;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -63,6 +62,10 @@ public class DistributedCore {
         }
 
         return instance;
+    }
+    
+    public String getUserName() {
+        return userName;
     }
 
     private DistributedCore() {

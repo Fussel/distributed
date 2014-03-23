@@ -5,8 +5,9 @@
  */
 package distributed.msg;
 
-import distributed.dao.Post;
-import distributed.dao.PrivateMessage;
+import distributed.dto.GroupMessage;
+import distributed.dto.IMessage;
+import distributed.dto.PrivateMessage;
 import distributed.net.DistributedCore;
 import distributed.util.DistributedKrypto;
 import distributed.util.MessageHelper;
@@ -22,16 +23,17 @@ import org.jgroups.Message;
  */
 public class MsgDialog extends javax.swing.JDialog {
 
-    private Message mMessage;
+    private IMessage mMessage;
     private String reciever;
 
-    public MsgDialog(JFrame rootWindow, boolean b, Message message, String reciever) {
+    public MsgDialog(JFrame rootWindow, boolean b, IMessage message, String reciever) {
         super(rootWindow, b);
         initComponents();
 
         mMessage = message;
-        if (message != null && (message.getObject() instanceof Post)) {
-            jTextFieldMsg.setText(((Post) message.getObject()).getMessage());
+
+        if (message != null && (message instanceof GroupMessage)) {
+            jTextFieldMsg.setText(DistributedKrypto.getInstance().decryptMessage(message.getMessage()));
             jComboBoxGroup.setEnabled(true);
         } 
 
@@ -44,11 +46,11 @@ public class MsgDialog extends javax.swing.JDialog {
 
     }
 
-    public Message getMessage() {
+    public IMessage getMessage() {
         return mMessage;
     }
 
-    public void setMessage(Message m) {
+    public void setMessage(IMessage m) {
         this.mMessage = m;
     }
 
@@ -184,9 +186,10 @@ public class MsgDialog extends javax.swing.JDialog {
             jTextFieldMsg.requestFocus();
         } else {
             if (reciever != null) {
-                mMessage = MessageHelper.buildPrivateMessage((Post)mMessage.getObject(), jTextFieldMsg.getText());
+                mMessage = new PrivateMessage(reciever, DistributedKrypto.getInstance().encryptString(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
             } else {
-                mMessage = new Message(null, new Post(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
+                mMessage = new GroupMessage(DistributedKrypto.getInstance().publicKeyToString(DistributedKrypto.getInstance().getMyPublicKey()),
+                        jTextFieldMsg.getText());
             }
 
             this.dispose();

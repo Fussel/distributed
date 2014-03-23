@@ -24,6 +24,12 @@ public class SettingsProvider {
     private static SettingsProvider instance;
     private  Properties props;
     
+    private static final String C_DB_NAME       = "/distributed.sqlite";
+    private static final String C_KEY_DIR       = "/keys";
+    private static final String C_DB_DIR        = "/db";
+    private static final String C_PUB_KEY       = "/pub.key";
+    private static final String C_PRI_KEY       = "/priv.key";
+    
     //TODO Add all needed property tags
     private static final String USER_NAME       = "user.name";
     private static final String USER_GROUP      = "user.group";
@@ -58,9 +64,27 @@ public class SettingsProvider {
                 new FileInputStream(settingsFile));
             props.load(in);
             in.close();
+            
+            checkValues();
         } catch(IOException e) {
             e.printStackTrace();
         } 
+    }
+    
+    private void checkValues() {
+        if(props.getProperty(ROOT_DIR) == null)
+            props.setProperty(ROOT_DIR, System.getProperty("user.home"));
+        
+        if(props.getProperty(DB_DIR) == null)
+            props.setProperty(DB_DIR, C_DB_DIR);
+            
+        if(props.getProperty(DB_NAME) == null)
+            props.setProperty(DB_NAME, C_DB_NAME);
+        
+        if(props.getProperty(KEY_DIR) == null)
+            props.setProperty(KEY_DIR, C_KEY_DIR);
+        
+        writePropertyChanges();
     }
     
     public void storeUserName(String userName) {
@@ -88,9 +112,12 @@ public class SettingsProvider {
      * 
      */
     public void storeRootDirectory(String rootDirectory) {
-        //TODO check if the root dir is already set. if so all files must be copied.
-        props.setProperty(ROOT_DIR, rootDirectory);
-        writePropertyChanges();
+        //check if the root dir is already set. if so all files must be copied.
+        String path = (String) props.get(ROOT_DIR);
+        if(path == null || path.isEmpty()){
+            props.setProperty(ROOT_DIR, rootDirectory);
+            writePropertyChanges();
+        }
     }
        
     public String getUserName() {
