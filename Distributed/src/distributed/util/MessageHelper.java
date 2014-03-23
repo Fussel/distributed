@@ -8,7 +8,6 @@ package distributed.util;
 
 import distributed.dto.GroupMessage;
 import distributed.dto.PrivateMessage;
-import java.security.PublicKey;
 import org.jgroups.Message;
 
 /**
@@ -29,11 +28,8 @@ public class MessageHelper {
      * @return 
      */
     public static Message buildPrivateMessage(GroupMessage post, String msg) {
-        PublicKey key;
-        
-        key = DistributedKrypto.getInstance().StringToPublicKey(post.getKey());
-        
-        byte[] encodedMessage = DistributedKrypto.getInstance().encryptString(msg, key);
+        byte[] encodedMessage = DistributedKrypto.getInstance().encryptString(msg, 
+                DistributedKrypto.getInstance().StringToPublicKey(post.getKey()));
         PrivateMessage message = new PrivateMessage(post.getSender(), encodedMessage);
         
         return new Message(null, message);
