@@ -6,9 +6,12 @@
 package distributed.user;
 
 import distributed.main.MainFrame;
+import distributed.net.DistributedCore;
 import distributed.util.IpAdressAdapter;
 import distributed.util.SettingsProvider;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -261,8 +264,12 @@ public class AccessFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void jComboBoxInterfaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxInterfaceActionPerformed
-        // TODO add your handling code here:
-        
+        String adress = jComboBoxInterface.getSelectedItem().toString();
+        try {
+            DistributedCore.getInstance().configure(InetAddress.getByName(adress));
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(AccessFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jComboBoxInterfaceActionPerformed
 
     /**
