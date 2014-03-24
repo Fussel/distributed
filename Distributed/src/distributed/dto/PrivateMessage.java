@@ -8,6 +8,7 @@ package distributed.dto;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
@@ -40,4 +41,33 @@ public class PrivateMessage extends IMessage implements Serializable {
         this.receiver = receiver;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        
+        if(!super.equals(obj))
+            return false;
+        if (obj == null) {
+            return false;
+        }
+        
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        final PrivateMessage other = (PrivateMessage) obj;
+        
+        if (!Objects.equals(this.receiver, other.receiver)) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    
 }
