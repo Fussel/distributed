@@ -45,7 +45,7 @@ public class GroupMessage extends IMessage implements Serializable {
         this.key = key;
     }
     
-//    public String getMessage() {
-//        return new String()
-//    }
+    public String getMessageString() {
+        return new String(message);
+    }
 }

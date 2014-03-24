@@ -35,7 +35,7 @@ public class IMessage implements Serializable{
     @DatabaseField(columnName = COL_NAME_SENDER)
     private String  sender;
     @DatabaseField(columnName = COL_NAME_MESSAGE, dataType = DataType.BYTE_ARRAY)
-    private byte[]  message;
+    protected byte[]  message;
     @DatabaseField(columnName = COL_NAME_DIRTY)
     private boolean dirtyBit;
     
