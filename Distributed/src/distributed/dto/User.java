@@ -8,6 +8,7 @@ package distributed.dto;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import java.util.Objects;
 
 /**
  *
@@ -51,5 +52,26 @@ public class User {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 53 * hash + Objects.hashCode(this.userID);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        if (!Objects.equals(this.userID, other.userID)) {
+            return false;
+        }
+        return true;
+    }
 }
