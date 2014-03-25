@@ -30,7 +30,7 @@ public class IncrementalUpdate implements IDistributedUpdate {
         
         private ArrayList<IMessage>     objectBuffer;
         private List<IMessage>          updateQueue;
-        private List<IMessage>          sublist;
+        private ArrayList<IMessage>          sublist;
         
         private ServerSocket            server;
         private Socket                  client;
@@ -76,14 +76,41 @@ public class IncrementalUpdate implements IDistributedUpdate {
                         } else if(msg.getObjectCount() < objectBuffer.size()) {
                             //TODO build sublist
                         } else {
+                            //TODO NOT SUPPORTED IN THIS VERSION
+                            //Breaks the entropy paradigm of the incremental update
                             System.out.println("UpdateClient contains more messages as server");
                             
+                            sendProtokollMessage(new UpdateProtokoll(
+                                UpdateProtokoll.UpdateTask.FAILURE));
                         }
                     case LOAD_PRIVATE_MESSAGES:
                         
+                    case FAILURE: 
+                        throw new UpdateFailureException();
                     default:
                         log.warn("Unknown message received while update");
                 }
+            }
+        }
+        
+        /**
+         * 
+         * @param objectList 
+         */
+        private void update(ArrayList<IMessage> objectList) {
+            
+        }
+        
+        /**
+         * Send an UpdateProtokoll to the client;
+         * 
+         * @param msg The object which should be send.
+         */
+        private void sendProtokollMessage(UpdateProtokoll msg) {
+            try {
+                oos.writeObject(msg);
+            } catch(IOException io) {
+                log.error(io);
             }
         }
         
@@ -105,6 +132,8 @@ public class IncrementalUpdate implements IDistributedUpdate {
                 log.error(e);
             } catch (ClassNotFoundException cnf) {
                 log.error(cnf);
+            } catch (UpdateFailureException ufe) {
+                log.error(ufe);
             } finally {
                 //Close streams
             }
@@ -139,8 +168,15 @@ public class IncrementalUpdate implements IDistributedUpdate {
             log.debug("PrivateMessages load into objectBuffer");
         }
         
-        private void update() {
-            
+        private void processMessage(Object o) {
+            if(o instanceof UpdateProtokoll) {
+                UpdateProtokoll msg = (UpdateProtokoll) o;
+                
+                switch(msg.getTask()) {
+                    case FAILURE:
+                        throw new UpdateFailureException();
+                }
+            }
         }
         
         public void run() {
@@ -158,9 +194,22 @@ public class IncrementalUpdate implements IDistributedUpdate {
                 
             } catch (IOException io) {
                 log.error(io);
+            } catch (UpdateFailureException ufe) {
+                log.error(ufe);
             } finally {
                 //TODO Close streams send close
             }
+        }
+    }
+    
+    public static class UpdateFailureException extends RuntimeException {
+        
+        public UpdateFailureException() {
+            super();
+        }
+        
+        public UpdateFailureException(String message) {
+            super(message);
         }
     }
     
