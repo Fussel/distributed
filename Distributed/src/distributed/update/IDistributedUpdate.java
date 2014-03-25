@@ -12,4 +12,6 @@ package distributed.update;
  */
 public interface IDistributedUpdate {
     
+    public static interface Server extends Runnable {}
+    public static interface Client extends Runnable {}
 }

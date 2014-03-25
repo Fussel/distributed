@@ -26,11 +26,12 @@ public class IncrementalUpdate implements IDistributedUpdate {
     
     private static final Logger log = Logger.getLogger(IncrementalUpdate.class.getName());
     
-    public static class UpdateServer extends Thread {
+    public static class UpdateServer extends Thread implements IDistributedUpdate.Server {
+        private static final Logger log = Logger.getLogger(IncrementalUpdate.UpdateServer.class.getName());
         
-        private ArrayList<IMessage>     objectBuffer;
+        private List<IMessage>          objectBuffer;
         private List<IMessage>          updateQueue;
-        private ArrayList<IMessage>          sublist;
+        private List<IMessage>          sublist;
         
         private ServerSocket            server;
         private Socket                  client;
@@ -69,12 +70,20 @@ public class IncrementalUpdate implements IDistributedUpdate {
                 
                 switch(msg.getTask()) {
                     case LOAD_GROUP_MESSAGES:
+                        log.debug("Load GroupMessage");
                         prepareGroupMessageList();
                         
                         if(msg.getObjectCount() == 0) {
                             //TODO Plain update
-                        } else if(msg.getObjectCount() < objectBuffer.size()) {
-                            //TODO build sublist
+                            updateQueue.addAll(objectBuffer);
+                            sendProtokollMessage(new UpdateProtokoll(
+                                    UpdateProtokoll.UpdateTask.SUCESSFUL));
+                        } else if(msg.getObjectCount() <= objectBuffer.size()) {
+                            sublist = objectBuffer.subList(0, msg.getObjectCount());
+                            updateQueue.addAll(objectBuffer.subList(msg.getObjectCount(), 
+                                    objectBuffer.size()));
+                            sendProtokollMessage(new UpdateProtokoll(
+                                    UpdateProtokoll.UpdateTask.START_UPDATE));
                         } else {
                             //TODO NOT SUPPORTED IN THIS VERSION
                             //Breaks the entropy paradigm of the incremental update
@@ -85,6 +94,17 @@ public class IncrementalUpdate implements IDistributedUpdate {
                         }
                     case LOAD_PRIVATE_MESSAGES:
                         
+                    case COMPARE_IMSG_HASH:
+                        if(checkHash(msg)) {
+                            //Hashes equal
+                            sendProtokollMessage(new UpdateProtokoll(
+                                    UpdateProtokoll.UpdateTask.HASH_EQUALS));
+                            log.debug("Hashes of block are equal");
+                        } else {
+                            //Hashes differ
+                            sendProtokollMessage(new UpdateProtokoll(
+                                    UpdateProtokoll.UpdateTask.HASH_DIFFERS));
+                        }
                     case FAILURE: 
                         throw new UpdateFailureException();
                     default:
@@ -93,12 +113,14 @@ public class IncrementalUpdate implements IDistributedUpdate {
             }
         }
         
-        /**
-         * 
-         * @param objectList 
-         */
-        private void update(ArrayList<IMessage> objectList) {
+        private boolean checkHash(UpdateProtokoll up) {
+            List<IMessage> tmpList = sublist.subList(
+                    up.getPivot(), up.getPivot() + up.getObjectCount());
             
+            if(tmpList.hashCode() == up.getHash())
+                return true;
+            
+            return false;
         }
         
         /**
@@ -119,14 +141,17 @@ public class IncrementalUpdate implements IDistributedUpdate {
             try {
                 client = server.accept();
                 log.debug("Client connected");
-                server.close();
                 
-                ois = new ObjectInputStream(
-                    client.getInputStream());
+               
                 oos = new ObjectOutputStream(
                     client.getOutputStream());
+                ois = new ObjectInputStream(
+                    client.getInputStream());
+                
+                log.debug("ClientStreams opend");
                 
                 Object o = ois.readObject();
+                processMessage(o);
                 
             } catch (IOException e) {
                 log.error(e);
@@ -140,21 +165,21 @@ public class IncrementalUpdate implements IDistributedUpdate {
         }
     }
     
-    public static class UpdateClient extends Thread {
-        
+    public static class UpdateClient extends Thread implements IDistributedUpdate.Client {
+        private static final Logger log = Logger.getLogger(IncrementalUpdate.UpdateClient.class.getName());
         private ArrayList<IMessage> objectBuffer;
         private Socket client;
         
         private ObjectInputStream ois;
         private ObjectOutputStream oos;
         
+        String ip;
+        int port;
+        
         public UpdateClient(String ip, int port) {
             log.debug("Initialising UpdateClient");
-            try {
-                client = new Socket(ip, port);
-            } catch(IOException e) {
-                log.error(e);
-            }
+            this.ip = ip;
+            this.port = port;
         }
         
         private void loadGroupMessages() {
@@ -190,6 +215,7 @@ public class IncrementalUpdate implements IDistributedUpdate {
                         log.debug("Update triggerd");
                         update(objectBuffer, 0, objectBuffer.size());
                     case SUCESSFUL:
+                        log.debug("Update Sucessful");
                         return msg;
                     case FAILURE:
                         throw new UpdateFailureException();
@@ -252,11 +278,15 @@ public class IncrementalUpdate implements IDistributedUpdate {
         
         public void run() {
             try {
+                client = new Socket(ip, port);
                 UpdateProtokoll up;
+                
                 ois = new ObjectInputStream(
                         client.getInputStream());
                 oos = new ObjectOutputStream(
                         client.getOutputStream());
+                
+                log.debug("hallo");
                 
                 loadGroupMessages();
                 
@@ -279,7 +309,7 @@ public class IncrementalUpdate implements IDistributedUpdate {
             } catch (UpdateFailureException ufe) {
                 log.error(ufe);
             } finally {
-                //TODO Close streams send close
+                log.debug("FUUUUUUUUU");
             }
         }
     }

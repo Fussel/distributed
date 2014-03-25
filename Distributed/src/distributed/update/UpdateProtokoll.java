@@ -61,4 +61,12 @@ public class UpdateProtokoll implements Serializable {
         return objectCount;
     }
     
+    public int getPivot() {
+        return pivot;
+    }
+    
+    public int getHash() {
+        return hash;
+    }
+    
 }
