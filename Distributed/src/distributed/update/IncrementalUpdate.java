@@ -171,14 +171,45 @@ public class IncrementalUpdate implements IDistributedUpdate {
             log.debug("PrivateMessages load into objectBuffer");
         }
         
+        /**
+         * Processing the received objects.
+         * 
+         * @param o
+         * @return 
+         */
         private UpdateProtokoll processMessage(Object o) {
             if(o instanceof UpdateProtokoll) {
                 UpdateProtokoll msg = (UpdateProtokoll) o;
                 
                 switch(msg.getTask()) {
+                    case HASH_EQUALS:
+                        return msg;
+                    case HASH_DIFFERS:
+                        return msg;
+                    case START_UPDATE:
+                        log.debug("Update triggerd");
+                        update(objectBuffer, 0, objectBuffer.size());
+                    case SUCESSFUL:
+                        return msg;
                     case FAILURE:
                         throw new UpdateFailureException();
                 }
+            }
+            return null;
+        }
+        
+        /**
+         * 
+         * @return 
+         */
+        private UpdateProtokoll receiveMessage() {
+            try {
+                Object o = ois.readObject();              
+                return processMessage(o);
+            } catch(ClassNotFoundException cnf) {
+                log.error(cnf);
+            } catch(IOException io) {
+                log.error(io);
             }
             return null;
         }
@@ -194,12 +225,34 @@ public class IncrementalUpdate implements IDistributedUpdate {
         public void update(List<IMessage> objStack, int pivot, int stackSize) {
             
             //Check || break
+            sendUpdateProtokoll(new UpdateProtokoll(
+                UpdateProtokoll.UpdateTask.COMPARE_IMSG_HASH, pivot, stackSize, objStack.hashCode()));
+            UpdateProtokoll up = receiveMessage();
+            if(up == null) {
+                log.error("No response redceived");
+            } else {
+                switch(up.getTask()) {
+                    case HASH_EQUALS:
+                        log.debug("Block ok");
+                        return;
+                    case HASH_DIFFERS:
+                        log.debug("Block differs from updater. Go on");
+                }
+            }
+            
+            int newPivot = objStack.size() / 2;
             //Check upper half
+            List<IMessage> tmpUpperList = objStack.subList(newPivot, objStack.size());
+            update(tmpUpperList, newPivot, tmpUpperList.size());
             //Check lower half
+            List<IMessage> tmpLowerList = objStack.subList(0, newPivot);
+            update(tmpLowerList, newPivot - tmpLowerList.size(), 
+                    tmpLowerList.size());
         }
         
         public void run() {
             try {
+                UpdateProtokoll up;
                 ois = new ObjectInputStream(
                         client.getInputStream());
                 oos = new ObjectOutputStream(
@@ -207,9 +260,19 @@ public class IncrementalUpdate implements IDistributedUpdate {
                 
                 loadGroupMessages();
                 
-                oos.writeObject(new UpdateProtokoll(
+                sendUpdateProtokoll(new UpdateProtokoll(
                         UpdateProtokoll.UpdateTask.LOAD_GROUP_MESSAGES,
                         objectBuffer.size()));
+                
+                up = receiveMessage();
+                
+                loadPrivateMessages();
+                
+                sendUpdateProtokoll(new UpdateProtokoll(
+                    UpdateProtokoll.UpdateTask.LOAD_PRIVATE_MESSAGES,
+                    objectBuffer.size()));
+                
+                up = receiveMessage();
                 
             } catch (IOException io) {
                 log.error(io);

@@ -17,22 +17,40 @@ public class UpdateProtokoll implements Serializable {
     public static enum UpdateTask {
         LOAD_GROUP_MESSAGES, 
         LOAD_PRIVATE_MESSAGES,
+        START_UPDATE,
+        SUCESSFUL, 
+        COMPARE_IMSG_HASH,
+        HASH_EQUALS,
+        HASH_DIFFERS,
         FAILURE
     }
     
     private UpdateTask task;
     
-    private String hashValue;
+    private int hash;
     private int objectCount;
-    private int objectOffset;
+    private int pivot;
     
     public UpdateProtokoll(UpdateTask task) {
         this.task = task;
     }
     
+    public UpdateProtokoll(UpdateTask task, int pivot, int objectCount, int hash) {
+        this.task           = task;
+        this.pivot          = pivot;
+        this.objectCount    = objectCount;
+        this.hash           = hash;
+    }
+    
+    public UpdateProtokoll(UpdateTask task,int pivot, int objectCount) {
+        this.task           = task;
+        this.pivot          = pivot;
+        this.objectCount    = objectCount;
+    }
+    
     public UpdateProtokoll(UpdateTask task, int objectCount) {
-        this.task = task;
-        this.objectCount = objectCount;
+        this.task           = task;
+        this.objectCount    = objectCount; 
     }
     
     public UpdateProtokoll.UpdateTask getTask() {
