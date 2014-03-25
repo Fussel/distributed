@@ -22,7 +22,6 @@ public class IpAdressAdapter {
     * Create a ip list with the active Ip
     */
     public ArrayList<String> getNetworkInterfaces() throws SocketException {
-        System.out.println("MEINE TESTAREA");
         ArrayList<String> ipList = new ArrayList<String>();
         Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
         while (interfaces.hasMoreElements()) {
@@ -48,7 +47,6 @@ public class IpAdressAdapter {
 
             }
         }
-        System.out.println("test end");
         return ipList;
     }
     
