@@ -14,6 +14,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.PatternLayout;
 
 /**
  *
@@ -28,6 +31,12 @@ public class AccessFrame extends javax.swing.JFrame {
      * Creates new form LoginFrame
      */
     public AccessFrame() {
+        
+        //Setup the root logger
+        Layout layout = new PatternLayout("%d{yyyy-MM-dd---HH-mm-ss-SSS} %5p %c: %m%n");
+        org.apache.log4j.Logger rootLogger = org.apache.log4j.Logger.getRootLogger();
+        rootLogger.setLevel(org.apache.log4j.Level.DEBUG);
+        rootLogger.addAppender(new ConsoleAppender(layout));
         
         getIpList(); //get the ip list in ipList
         initComponents();
