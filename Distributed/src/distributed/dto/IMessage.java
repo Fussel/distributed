@@ -8,6 +8,7 @@ package distributed.dto;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
+import static distributed.dto.GroupMessage.COL_NAME_DELETED;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -27,6 +28,7 @@ public class IMessage implements Serializable, Comparable {
     public static final String COL_NAME_MESSAGE = "message";
     public static final String COL_NAME_DIRTY   = "dirty_bit";
     public static final String COL_NAME_ID      = "id";
+    public static final String COL_NAME_DELETED = "deleted";
     
     @DatabaseField(id=true)
     private UUID  messageUUID;
@@ -38,6 +40,8 @@ public class IMessage implements Serializable, Comparable {
     protected byte[]  message;
     @DatabaseField(columnName = COL_NAME_DIRTY)
     private boolean dirtyBit;
+    @DatabaseField(columnName = COL_NAME_DELETED)
+    private boolean deleted;
     
     
     public IMessage() {
@@ -80,6 +84,14 @@ public class IMessage implements Serializable, Comparable {
     
     protected long getTimeLong() {
         return sendDate;
+    }
+    
+    public boolean getDeleted() {
+        return deleted;
+    }
+    
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override

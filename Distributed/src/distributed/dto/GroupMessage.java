@@ -21,8 +21,8 @@ public class GroupMessage extends IMessage implements Serializable {
     
     public static final String TABLE_NAME           = "group_message";
     public final static String COL_NAME_PUBLIC_KEY  = "public_key";
-
     
+
     @DatabaseField(columnName = COL_NAME_PUBLIC_KEY)
     private String key;
 

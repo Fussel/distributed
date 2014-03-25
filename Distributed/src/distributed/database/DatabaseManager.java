@@ -164,9 +164,14 @@ public class DatabaseManager {
         
         return null;
     }
+    
     public List<PrivateMessage> getMyPrivateMessages() {
         List<PrivateMessage> msg = new ArrayList();
         //TODO
         return msg;
+    }
+    
+    public void markAsDeleted(GroupMessage msg) {
+        
     }
 }
