@@ -30,9 +30,9 @@ import sun.misc.BASE64Encoder;
  */
 public class DistributedKrypto {
     private static DistributedKrypto instance;
-    private static final String CIPHER_FORM = "RSA/ECB/PKCS1Padding";
-    private static final String ALGORITHM = "RSA";
-    private static final int KEY_LENGHT = 1024;
+    private static final String CIPHER_FORM     = "RSA/ECB/PKCS1Padding";
+    private static final String ALGORITHM       = "RSA";
+    private static final int KEY_LENGHT         = 1024;
     
     private final String PRIVATE_FILE;
     private final String PUBLIC_FILE;
@@ -100,7 +100,7 @@ public class DistributedKrypto {
         //Create dir
         File dir = new File(DIR);
         if(!dir.exists())
-            dir.mkdir();
+            dir.mkdirs();
         
         dir = null;
         //Store publickey
