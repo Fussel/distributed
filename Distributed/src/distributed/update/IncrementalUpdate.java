@@ -79,6 +79,7 @@ public class IncrementalUpdate implements IDistributedUpdate {
                             sendProtokollMessage(new UpdateProtokoll(
                                     UpdateProtokoll.UpdateTask.SUCESSFUL));
                         } else if(msg.getObjectCount() <= objectBuffer.size()) {
+                            //Adding missing messages and updating changed
                             sublist = objectBuffer.subList(0, msg.getObjectCount());
                             updateQueue.addAll(objectBuffer.subList(msg.getObjectCount(), 
                                     objectBuffer.size()));
@@ -87,13 +88,28 @@ public class IncrementalUpdate implements IDistributedUpdate {
                         } else {
                             //TODO NOT SUPPORTED IN THIS VERSION
                             //Breaks the entropy paradigm of the incremental update
-                            System.out.println("UpdateClient contains more messages as server");
+                            log.error("UpdateClient contains more messages as server");
                             
                             sendProtokollMessage(new UpdateProtokoll(
                                 UpdateProtokoll.UpdateTask.FAILURE));
                         }
                     case LOAD_PRIVATE_MESSAGES:
+                        log.debug("Load PrivateMessages");
+                        preparePrivateMessageList();
                         
+                        if(msg.getObjectCount() == 0) {
+                            //TODO PLain update
+                        } else if(msg.getObjectCount() <= objectBuffer.size()) {
+                            sublist = objectBuffer.subList(0, msg.getObjectCount());
+                            updateQueue.addAll(objectBuffer.subList(msg.getObjectCount(), 
+                                    objectBuffer.size()));
+                            sendProtokollMessage(new UpdateProtokoll(
+                                    UpdateProtokoll.UpdateTask.START_UPDATE));
+                        } else {
+                            //TODO Breaks the entropy paradigm
+                            sendProtokollMessage(new UpdateProtokoll(
+                                UpdateProtokoll.UpdateTask.FAILURE));
+                        }
                     case COMPARE_IMSG_HASH:
                         if(checkHash(msg)) {
                             //Hashes equal
@@ -285,8 +301,6 @@ public class IncrementalUpdate implements IDistributedUpdate {
                         client.getInputStream());
                 oos = new ObjectOutputStream(
                         client.getOutputStream());
-                
-                log.debug("hallo");
                 
                 loadGroupMessages();
                 
