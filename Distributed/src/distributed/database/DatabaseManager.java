@@ -155,6 +155,15 @@ public class DatabaseManager {
         return -1;
     }
     
+    public List<PrivateMessage> getAllPrivateMessages() {
+        try {
+            return privateMessageDao.queryForAll();
+        } catch(SQLException sql) {
+            log.error(sql);
+        }
+        
+        return null;
+    }
     public List<PrivateMessage> getMyPrivateMessages() {
         List<PrivateMessage> msg = new ArrayList();
         //TODO
