@@ -24,9 +24,9 @@ public class SettingsProvider {
     private static SettingsProvider instance;
     private  Properties props;
     
-    private static final String C_DB_NAME       = "/distributed.sqlite";
+    private static final String C_DB_NAME       = "distributed.sqlite";
     private static final String C_KEY_DIR       = "/keys";
-    private static final String C_DB_DIR        = "/db";
+    private static final String C_DB_DIR        = "/db/";
     private static final String C_PUB_KEY       = "/pub.key";
     private static final String C_PRI_KEY       = "/priv.key";
     
