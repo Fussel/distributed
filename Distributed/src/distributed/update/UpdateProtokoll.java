@@ -22,6 +22,9 @@ public class UpdateProtokoll implements Serializable {
         COMPARE_IMSG_HASH,
         HASH_EQUALS,
         HASH_DIFFERS,
+        SEND_GM_REQ,
+        SEND_PM_REQ,
+        ACK,
         FAILURE
     }
     
