@@ -145,6 +145,9 @@ public class IncrementalUpdate implements IDistributedUpdate {
         private ArrayList<IMessage> objectBuffer;
         private Socket client;
         
+        private ObjectInputStream ois;
+        private ObjectOutputStream oos;
+        
         public UpdateClient(String ip, int port) {
             log.debug("Initialising UpdateClient");
             try {
@@ -168,7 +171,7 @@ public class IncrementalUpdate implements IDistributedUpdate {
             log.debug("PrivateMessages load into objectBuffer");
         }
         
-        private void processMessage(Object o) {
+        private UpdateProtokoll processMessage(Object o) {
             if(o instanceof UpdateProtokoll) {
                 UpdateProtokoll msg = (UpdateProtokoll) o;
                 
@@ -177,13 +180,29 @@ public class IncrementalUpdate implements IDistributedUpdate {
                         throw new UpdateFailureException();
                 }
             }
+            return null;
+        }
+        
+        private void sendUpdateProtokoll(UpdateProtokoll msg) {
+            try {
+                oos.writeObject(msg);
+            } catch(IOException io) {
+                log.error(io);
+            }
+        }
+        
+        public void update(List<IMessage> objStack, int pivot, int stackSize) {
+            
+            //Check || break
+            //Check upper half
+            //Check lower half
         }
         
         public void run() {
             try {
-                ObjectInputStream ois = new ObjectInputStream(
+                ois = new ObjectInputStream(
                         client.getInputStream());
-                ObjectOutputStream oos = new ObjectOutputStream(
+                oos = new ObjectOutputStream(
                         client.getOutputStream());
                 
                 loadGroupMessages();

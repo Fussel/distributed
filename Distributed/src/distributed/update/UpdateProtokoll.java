@@ -16,7 +16,8 @@ public class UpdateProtokoll implements Serializable {
     
     public static enum UpdateTask {
         LOAD_GROUP_MESSAGES, 
-        LOAD_PRIVATE_MESSAGES
+        LOAD_PRIVATE_MESSAGES,
+        FAILURE
     }
     
     private UpdateTask task;
@@ -24,6 +25,10 @@ public class UpdateProtokoll implements Serializable {
     private String hashValue;
     private int objectCount;
     private int objectOffset;
+    
+    public UpdateProtokoll(UpdateTask task) {
+        this.task = task;
+    }
     
     public UpdateProtokoll(UpdateTask task, int objectCount) {
         this.task = task;
