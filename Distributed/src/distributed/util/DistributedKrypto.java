@@ -213,7 +213,7 @@ public class DistributedKrypto {
      * 
      * <b>The byte array must be unmodified to prevent invalid block 
      * segmentations</b>
-     * 
+     *
      * @param data The byte array which should be decrypted.
      * @return The decrypted string representation of the array.
      */
@@ -227,7 +227,17 @@ public class DistributedKrypto {
             e.printStackTrace();
             return null;
         }
-    }  
+    } 
+    
+    /**
+     * Easy access the string representation of the 
+     * public key.
+     * 
+     * @return 
+     */
+    public String getPUblicKeyString() {
+        return publicKeyToString(publicKey);
+    }
     
     /**
      * Converts a public key to a string for easy storing.
