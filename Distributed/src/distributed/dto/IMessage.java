@@ -20,7 +20,7 @@ import java.util.UUID;
  *
  * @author ygraf
  */
-public class IMessage implements Serializable{
+public class IMessage implements Serializable, Comparable {
    
     public static final String COL_NAME_DATE    = "send_date";
     public static final String COL_NAME_SENDER  = "sender";
@@ -77,6 +77,10 @@ public class IMessage implements Serializable{
     public void setMessage(byte[] message) {
         this.message = message;
     }    
+    
+    protected long getTimeLong() {
+        return sendDate;
+    }
 
     @Override
     public int hashCode() {
@@ -111,6 +115,21 @@ public class IMessage implements Serializable{
         }
         return true;
     }
-    
-    
+
+    @Override
+    public int compareTo(Object t) {
+        
+        if(!(t instanceof IMessage))
+            return -1;
+        
+        IMessage o = (IMessage) t;
+        
+        if(this.sendDate < o.getTimeLong())
+            return -1;
+        
+        if(this.sendDate == o.getTimeLong())
+            return 0;
+        
+        return 1;           
+    }
 }
