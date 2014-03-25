@@ -53,11 +53,11 @@ public class DatabaseManager {
             String databasePath = SettingsProvider.getInstance().getRootDir();
        
             databasePath += SettingsProvider.getInstance().getDBDir();
-            
+
             File dbPath = new File(databasePath);
             
             if(!dbPath.exists())
-                dbPath.mkdir();         
+                dbPath.mkdirs();
             
             connection = new JdbcConnectionSource(DATABASE_DRIVER + SettingsProvider.getInstance().getCanonicalDatabaseFile());
             
