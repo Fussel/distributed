@@ -77,8 +77,7 @@ public class MessageProcessor extends Thread {
         String message = (String) msg.getObject();
         if (message.equals("update")) {
             log.debug("Update request");
-            new IncrementalUpdate.UpdateServer(STD_PORT).start();
-            log.debug("UpdateServer started");
+
         } else if("server_opened".equals(message)) {
 //            new IncrementalUpdate.UpdateClient(msg.get)
         } else if (message.equals("close")) {
