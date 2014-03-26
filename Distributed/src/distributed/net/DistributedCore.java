@@ -288,8 +288,8 @@ public class DistributedCore {
             System.out.println("--------------------------------------");
         }
 
-        //Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
-        //sendMessage(new Message(u, "update"));
+        Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
+        sendMessage(new Message(u, "update"));
         //TODO Start the update
     }
 
