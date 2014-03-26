@@ -13,12 +13,11 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Layout;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 /**
@@ -26,7 +25,7 @@ import org.apache.log4j.PatternLayout;
  * @author kiefer
  */
 public class AccessFrame extends javax.swing.JFrame {
-
+    private static final Logger log = Logger.getLogger(AccessFrame.class);
     JFrame thisFrame;
     private ArrayList<String> ipList;
 
@@ -36,10 +35,7 @@ public class AccessFrame extends javax.swing.JFrame {
     public AccessFrame() {
         
         //Setup the root logger
-        Layout layout = new PatternLayout("%d{yyyy-MM-dd---HH-mm-ss-SSS} %5p %c: %m%n");
-        org.apache.log4j.Logger rootLogger = org.apache.log4j.Logger.getRootLogger();
-        rootLogger.setLevel(org.apache.log4j.Level.DEBUG);
-        rootLogger.addAppender(new ConsoleAppender(layout));
+        Logger rootLogger = org.apache.log4j.Logger.getRootLogger();
         
         getIpList(); //get the ip list in ipList
         initComponents();
@@ -277,7 +273,7 @@ public class AccessFrame extends javax.swing.JFrame {
         try {
             DistributedCore.getInstance().configure(InetAddress.getByName(adress));
         } catch (UnknownHostException ex) {
-            Logger.getLogger(AccessFrame.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(AccessFrame.class.getName());
         }
     }//GEN-LAST:event_jComboBoxInterfaceActionPerformed
 
@@ -323,7 +319,7 @@ public class AccessFrame extends javax.swing.JFrame {
             }
 
         } catch (SocketException ex) {
-            Logger.getLogger(AccessFrame.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(AccessFrame.class.getName());
         }
         
     }
