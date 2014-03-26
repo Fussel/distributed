@@ -171,12 +171,25 @@ public class IncrementalUpdate implements IDistributedUpdate {
                 ois = new ObjectInputStream(
                     client.getInputStream());
                 
+                Object o;
+                
                 while(inProgress) {
                 
-                    Object o = ois.readObject();
+                    o = ois.readObject();
                     processMessage(o);
                     
                 }
+                
+                log.debug("Hashes compared");
+                
+                sendProtokollMessage(new UpdateProtokoll(UpdateProtokoll.UpdateTask.SEND_GM_REQ));
+                o = ois.readObject();
+                
+                if(o instanceof UpdateProtokoll)
+                    log.debug(((UpdateProtokoll)o).getTask());
+                
+                oos.writeObject(updateQueue);
+                
       
             } catch (IOException e) {
                 log.error(e);
@@ -241,7 +254,17 @@ public class IncrementalUpdate implements IDistributedUpdate {
                         update(objectBuffer, 0, objectBuffer.size());
                     case SUCESSFUL:
                         log.debug("Update Sucessful");
+                        sendUpdateProtokoll(new UpdateProtokoll(UpdateProtokoll.UpdateTask.SUCESSFUL));
                         return msg;
+                    case SEND_GM_REQ:
+                        try {
+                            log.debug("Loading the updateQueue");
+                            Object uq = ois.readObject();
+                        } catch(ClassNotFoundException cnf) {
+                            log.error(cnf);
+                        } catch(IOException io) {
+                            log.error(io);
+                        }
                     case FAILURE:
                         throw new UpdateFailureException();
                 }
@@ -318,6 +341,8 @@ public class IncrementalUpdate implements IDistributedUpdate {
                         objectBuffer.size()));
                 
                 up = receiveMessage();
+                
+                
                 
                 loadPrivateMessages();
                 
