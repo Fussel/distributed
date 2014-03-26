@@ -46,9 +46,11 @@ public class MsgDialog extends javax.swing.JDialog {
             jComboBoxGroup.setEnabled(false);
         } 
         
-        if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.USER) {
+        if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) {
             jCheckBoxLeaderGroup.setVisible(false);
-        }
+        } else {
+           jCheckBoxLeaderGroup.setVisible(false);
+        } 
 
     }
 
