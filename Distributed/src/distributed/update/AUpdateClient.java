@@ -49,7 +49,7 @@ public abstract class AUpdateClient extends Thread {
     private UpdateProtokoll processMessage(Object o) {
         if (o instanceof UpdateProtokoll) {
             UpdateProtokoll msg = (UpdateProtokoll) o;
-
+            log.debug("Received: " + msg.getTask());
             switch (msg.getTask()) {
                 case HASH_EQUALS:
                     log.debug("Hashvalues equal");
@@ -73,7 +73,9 @@ public abstract class AUpdateClient extends Thread {
                         log.error(io);
                     }
                 case FAILURE:
-                    throw new UpdateFailureException();
+//                    throw new UpdateFailureException("Update Failure received");
+                default:
+                    log.warn(msg);
             }
         }
         return null;
@@ -97,6 +99,7 @@ public abstract class AUpdateClient extends Thread {
 
     private void sendUpdateProtokoll(UpdateProtokoll msg) {
         try {
+            log.debug("Send: " + msg.getTask());
             oos.writeObject(msg);
         } catch (IOException io) {
             log.error(io);
@@ -108,7 +111,9 @@ public abstract class AUpdateClient extends Thread {
         //Check || break
         sendUpdateProtokoll(new UpdateProtokoll(
                 UpdateProtokoll.UpdateTask.COMPARE_IMSG_HASH, pivot, stackSize, objStack.hashCode()));
+        
         UpdateProtokoll up = receiveMessage();
+        
         if (up == null) {
             log.error("No response redceived");
         } else {
@@ -147,7 +152,7 @@ public abstract class AUpdateClient extends Thread {
                     UpdateProtokoll.UpdateTask.LOAD_GROUP_MESSAGES,
                     objectBuffer.size()));
 
-//                log.debug("dafuuuuuu");
+            receiveMessage();
 //                loadPrivateMessages();
 //                
 //                sendUpdateProtokoll(new UpdateProtokoll(

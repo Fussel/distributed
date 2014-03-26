@@ -54,11 +54,11 @@ public abstract class AUpdateServer extends Thread {
 
         if (o instanceof UpdateProtokoll) {
             UpdateProtokoll msg = (UpdateProtokoll) o;
-
+            log.debug("Received: " + msg.getTask());
             switch (msg.getTask()) {
                 case LOAD_GROUP_MESSAGES:
                     log.debug("Load GroupMessage");
-                    prepareGroupMessageList();
+                    prepareGroupMessageList(); 
 
                     if (msg.getObjectCount() == 0) {
                         //TODO Plain update
@@ -75,13 +75,14 @@ public abstract class AUpdateServer extends Thread {
                         sendProtokollMessage(new UpdateProtokoll(
                                 UpdateProtokoll.UpdateTask.START_UPDATE));
                     } else {
-                            //TODO NOT SUPPORTED IN THIS VERSION
+                        //TODO NOT SUPPORTED IN THIS VERSION
                         //Breaks the entropy paradigm of the incremental update
                         log.error("UpdateClient contains more messages as server");
 
                         sendProtokollMessage(new UpdateProtokoll(
                                 UpdateProtokoll.UpdateTask.FAILURE));
                     }
+                break;
                 case LOAD_PRIVATE_MESSAGES:
                     log.debug("Load PrivateMessages");
                     preparePrivateMessageList();
@@ -98,8 +99,9 @@ public abstract class AUpdateServer extends Thread {
                                 UpdateProtokoll.UpdateTask.START_UPDATE));
                     } else {
                         //TODO Breaks the entropy paradigm
-                        sendProtokollMessage(new UpdateProtokoll(
-                                UpdateProtokoll.UpdateTask.FAILURE));
+                        log.error("Update not possible, entropy paradigm broken");
+//                        sendProtokollMessage(new UpdateProtokoll(
+//                                UpdateProtokoll.UpdateTask.FAILURE));
                     }
                 case COMPARE_IMSG_HASH:
                     if (checkHash(msg)) {
@@ -115,7 +117,7 @@ public abstract class AUpdateServer extends Thread {
                 case SUCESSFUL:
                     inProgress = false;
                 case FAILURE:
-                    throw new UpdateFailureException();
+                    throw new UpdateFailureException("FAILURE Received");
                 default:
                     log.warn("Unknown message received while update");
             }
@@ -142,6 +144,7 @@ public abstract class AUpdateServer extends Thread {
      */
     private void sendProtokollMessage(UpdateProtokoll msg) {
         try {
+            log.debug("Send: " + msg.getTask());
             oos.writeObject(msg);
         } catch (IOException io) {
             log.error(io);
@@ -159,35 +162,37 @@ public abstract class AUpdateServer extends Thread {
                     client.getOutputStream());
             ois = new ObjectInputStream(
                     client.getInputStream());
+            log.debug("Streams opend");
 
             Object o;
 
-            while (inProgress) {
-                log.debug("indaloop");
+            while (true) {
+                
                 o = ois.readObject();
+                log.debug("Read Object");
                 processMessage(o);
-
+                    
             }
+//            log.debug("Hashes compared");
+//
+//            sendProtokollMessage(new UpdateProtokoll(UpdateProtokoll.UpdateTask.SEND_GM_REQ));
+//            o = ois.readObject();
+//
+//            if (o instanceof UpdateProtokoll) {
+//                log.debug(((UpdateProtokoll) o).getTask());
+//            }
 
-            log.debug("Hashes compared");
-
-            sendProtokollMessage(new UpdateProtokoll(UpdateProtokoll.UpdateTask.SEND_GM_REQ));
-            o = ois.readObject();
-
-            if (o instanceof UpdateProtokoll) {
-                log.debug(((UpdateProtokoll) o).getTask());
-            }
-
-            oos.writeObject(updateQueue);
+//            oos.writeObject(updateQueue);
 
         } catch (IOException e) {
             log.error(e);
         } catch (ClassNotFoundException cnf) {
             log.error(cnf);
         } catch (UpdateFailureException ufe) {
+            ufe.printStackTrace();
             log.error(ufe);
         } finally {
-            //Close streams
+            log.info("Update ended");
         }
     }
 }

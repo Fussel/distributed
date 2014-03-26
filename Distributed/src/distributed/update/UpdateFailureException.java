@@ -11,5 +11,7 @@ package distributed.update;
  * @author steffen
  */
 public class UpdateFailureException extends RuntimeException {
-    
+    public UpdateFailureException(String msg) {
+        super(msg);
+    }
 }
