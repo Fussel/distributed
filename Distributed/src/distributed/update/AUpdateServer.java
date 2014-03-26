@@ -54,11 +54,11 @@ public abstract class AUpdateServer extends Thread {
 
         if (o instanceof UpdateProtokoll) {
             UpdateProtokoll msg = (UpdateProtokoll) o;
-
+            log.debug("Received: " + msg.getTask());
             switch (msg.getTask()) {
                 case LOAD_GROUP_MESSAGES:
                     log.debug("Load GroupMessage");
-                    prepareGroupMessageList();
+                    prepareGroupMessageList(); 
 
                     if (msg.getObjectCount() == 0) {
                         //TODO Plain update
@@ -75,13 +75,14 @@ public abstract class AUpdateServer extends Thread {
                         sendProtokollMessage(new UpdateProtokoll(
                                 UpdateProtokoll.UpdateTask.START_UPDATE));
                     } else {
-                            //TODO NOT SUPPORTED IN THIS VERSION
+                        //TODO NOT SUPPORTED IN THIS VERSION
                         //Breaks the entropy paradigm of the incremental update
                         log.error("UpdateClient contains more messages as server");
 
                         sendProtokollMessage(new UpdateProtokoll(
                                 UpdateProtokoll.UpdateTask.FAILURE));
                     }
+                break;
                 case LOAD_PRIVATE_MESSAGES:
                     log.debug("Load PrivateMessages");
                     preparePrivateMessageList();
@@ -98,6 +99,7 @@ public abstract class AUpdateServer extends Thread {
                                 UpdateProtokoll.UpdateTask.START_UPDATE));
                     } else {
                         //TODO Breaks the entropy paradigm
+                        log.error("Update not possible, entropy paradigm broken");
                         sendProtokollMessage(new UpdateProtokoll(
                                 UpdateProtokoll.UpdateTask.FAILURE));
                     }
@@ -112,10 +114,20 @@ public abstract class AUpdateServer extends Thread {
                         sendProtokollMessage(new UpdateProtokoll(
                                 UpdateProtokoll.UpdateTask.HASH_DIFFERS));
                     }
+                    break;
+                case ACK:
+                    try {
+                      oos.writeObject(updateQueue);
+                      log.debug("UpdateQueue written");
+                    } catch(IOException io) {
+                        log.error(io);
+                    }
+                break;
                 case SUCESSFUL:
                     inProgress = false;
+                    break;
                 case FAILURE:
-                    throw new UpdateFailureException();
+                    throw new UpdateFailureException("FAILURE Received");
                 default:
                     log.warn("Unknown message received while update");
             }
@@ -123,15 +135,28 @@ public abstract class AUpdateServer extends Thread {
     }
 
     private boolean checkHash(UpdateProtokoll up) {
-        List<IMessage> tmpList = sublist.subList(
-                up.getPivot(), up.getPivot() + up.getObjectCount());
+        if (up.getObjectCount() != 1) {
+            List<IMessage> tmpList = sublist.subList(
+                    up.getPivot(), up.getPivot() + up.getObjectCount());
 
-        if (tmpList.hashCode() == up.getHash()) {
-            log.debug("hashes equal");
-            return true;
+            if (tmpList.hashCode() == up.getHash()) {
+                log.debug("hashes equal");
+                return true;
+            }
+
+            log.debug("hashes unequal");
+            return false;
+        } else {
+            if(up.getObjectCount() == 1) {
+                if(sublist.get(up.getPivot()).hashCode() == up.getHash())
+                    return true;
+                
+                log.debug("Hash at leaf different add to uq");
+                updateQueue.add(sublist.get(up.getPivot()));
+                return false;
+            }
         }
-
-        log.debug("hashes unequal");
+        
         return false;
     }
 
@@ -142,6 +167,8 @@ public abstract class AUpdateServer extends Thread {
      */
     private void sendProtokollMessage(UpdateProtokoll msg) {
         try {
+            log.debug("Send: " + msg.getTask());
+            oos.flush();
             oos.writeObject(msg);
         } catch (IOException io) {
             log.error(io);
@@ -159,35 +186,50 @@ public abstract class AUpdateServer extends Thread {
                     client.getOutputStream());
             ois = new ObjectInputStream(
                     client.getInputStream());
+            log.debug("Streams opend");
 
             Object o;
 
             while (inProgress) {
-                log.debug("indaloop");
+                
                 o = ois.readObject();
+                log.debug("Read Object");
                 processMessage(o);
-
+                    
             }
-
-            log.debug("Hashes compared");
-
-            sendProtokollMessage(new UpdateProtokoll(UpdateProtokoll.UpdateTask.SEND_GM_REQ));
+            
+            sendProtokollMessage(new UpdateProtokoll(
+                    UpdateProtokoll.UpdateTask.SEND_GM_REQ));
+            
             o = ois.readObject();
-
-            if (o instanceof UpdateProtokoll) {
-                log.debug(((UpdateProtokoll) o).getTask());
+            processMessage(o);
+            
+            inProgress = true;
+            
+            while (inProgress) {
+                
+                o = ois.readObject();
+                log.debug("Read Object");
+                processMessage(o);
+                    
             }
-
-            oos.writeObject(updateQueue);
+            
+            sendProtokollMessage(new UpdateProtokoll(
+                    UpdateProtokoll.UpdateTask.SEND_PM_REQ));
+            
+            o = ois.readObject();
+            processMessage(o);
 
         } catch (IOException e) {
             log.error(e);
         } catch (ClassNotFoundException cnf) {
             log.error(cnf);
         } catch (UpdateFailureException ufe) {
+            sendProtokollMessage(new UpdateProtokoll(
+                    UpdateProtokoll.UpdateTask.FAILURE));
             log.error(ufe);
         } finally {
-            //Close streams
+            log.info("Update ended 1");
         }
     }
 }

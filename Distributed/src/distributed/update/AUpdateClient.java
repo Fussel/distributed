@@ -49,7 +49,7 @@ public abstract class AUpdateClient extends Thread {
     private UpdateProtokoll processMessage(Object o) {
         if (o instanceof UpdateProtokoll) {
             UpdateProtokoll msg = (UpdateProtokoll) o;
-
+            log.debug("Received: " + msg.getTask());
             switch (msg.getTask()) {
                 case HASH_EQUALS:
                     log.debug("Hashvalues equal");
@@ -65,15 +65,35 @@ public abstract class AUpdateClient extends Thread {
                     return msg;
                 case SEND_GM_REQ:
                     try {
+                        sendUpdateProtokoll(new UpdateProtokoll(
+                                UpdateProtokoll.UpdateTask.ACK));
                         log.debug("Loading the updateQueue");
                         Object uq = ois.readObject();
+                        log.debug("UpdateQueue load");
                     } catch (ClassNotFoundException cnf) {
                         log.error(cnf);
                     } catch (IOException io) {
                         log.error(io);
                     }
+                break;
+                case SEND_PM_REQ:
+                    try {
+                        sendUpdateProtokoll(new UpdateProtokoll(
+                                UpdateProtokoll.UpdateTask.ACK));
+                        log.debug("Loading updateQueue");
+                        Object uq = ois.readObject();
+                        log.debug("UpdateQueue successfully loaded");
+                    } catch(ClassNotFoundException cnf) {
+                        log.error(cnf);
+                    } catch(IOException io) {
+                        log.error(io);
+                    }
+                break;
                 case FAILURE:
-                    throw new UpdateFailureException();
+                    log.debug("Update failed");
+                    throw new UpdateFailureException("Update Failure received");
+                default:
+                    log.warn(msg);
             }
         }
         return null;
@@ -97,6 +117,7 @@ public abstract class AUpdateClient extends Thread {
 
     private void sendUpdateProtokoll(UpdateProtokoll msg) {
         try {
+            log.debug("Send: " + msg.getTask());
             oos.writeObject(msg);
         } catch (IOException io) {
             log.error(io);
@@ -108,7 +129,9 @@ public abstract class AUpdateClient extends Thread {
         //Check || break
         sendUpdateProtokoll(new UpdateProtokoll(
                 UpdateProtokoll.UpdateTask.COMPARE_IMSG_HASH, pivot, stackSize, objStack.hashCode()));
+        
         UpdateProtokoll up = receiveMessage();
+        
         if (up == null) {
             log.error("No response redceived");
         } else {
@@ -117,6 +140,8 @@ public abstract class AUpdateClient extends Thread {
                     log.debug("Block ok");
                     return;
                 case HASH_DIFFERS:
+                    if(stackSize == 1)
+                        return;
                     log.debug("Block differs from updater. Go on");
             }
         }
@@ -147,18 +172,23 @@ public abstract class AUpdateClient extends Thread {
                     UpdateProtokoll.UpdateTask.LOAD_GROUP_MESSAGES,
                     objectBuffer.size()));
 
-//                log.debug("dafuuuuuu");
-//                loadPrivateMessages();
-//                
-//                sendUpdateProtokoll(new UpdateProtokoll(
-//                    UpdateProtokoll.UpdateTask.LOAD_PRIVATE_MESSAGES,
-//                    objectBuffer.size()));
-//                
-//                up = receiveMessage();
-//                
-//                sendUpdateProtokoll(new UpdateProtokoll(
-//                        UpdateProtokoll.UpdateTask.SUCESSFUL));
-//                
+            receiveMessage();
+            receiveMessage();
+
+            loadPrivateMessages();
+
+            sendUpdateProtokoll(new UpdateProtokoll(
+                    UpdateProtokoll.UpdateTask.LOAD_PRIVATE_MESSAGES,
+                    objectBuffer.size()));
+
+            up = receiveMessage();
+            up = receiveMessage();
+
+            sendUpdateProtokoll(new UpdateProtokoll(
+                    UpdateProtokoll.UpdateTask.SUCESSFUL));
+            
+            up = receiveMessage();
+
         } catch (IOException io) {
             log.error(io);
         } catch (UpdateFailureException ufe) {

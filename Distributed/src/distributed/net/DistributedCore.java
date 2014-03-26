@@ -14,10 +14,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JList;
 import javax.swing.JTextPane;
+import org.apache.log4j.Logger;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
@@ -45,6 +44,7 @@ import org.jgroups.stack.ProtocolStack;
 public class DistributedCore {
 
     private static final String LEADER_CHANNEL = "DistributedLeaders";
+    private static final Logger log = Logger.getLogger(DistributedCore.class);
 
     private JChannel groupChannel;
     private JChannel leaderChannel;
@@ -186,7 +186,7 @@ public class DistributedCore {
         try {
             s.init();
         } catch (Exception ex) {
-            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, "Unable to init networkstack", ex);
+            log.error("Unable to add networkstack", ex);
         }
     }
 
@@ -194,11 +194,10 @@ public class DistributedCore {
         try {
             leaderChannel.connect(LEADER_CHANNEL);
         } catch (Exception ex) {
-            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(ex);
         }
     }
-
-    //TODO Determine if the PM and the posts have any difference in the sending process
+    
     public boolean sendMessage(Message msg) {
         try {
 
@@ -213,7 +212,7 @@ public class DistributedCore {
             }
 
         } catch (Exception ex) {
-            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(ex);
             return false;
         }
 
@@ -253,7 +252,7 @@ public class DistributedCore {
         try {
             leaderChannel.connect(LEADER_CHANNEL, view.getMembers().get(view.getMembers().size() - 1) , (long) 0.0);
         } catch (Exception ex) {
-            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(ex);
         }
         } else {
             groupChannel.close();
@@ -289,8 +288,8 @@ public class DistributedCore {
             System.out.println("--------------------------------------");
         }
 
-        //Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
-        //sendMessage(new Message(u, "update"));
+        Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
+        sendMessage(new Message(u, "update"));
         //TODO Start the update
     }
 

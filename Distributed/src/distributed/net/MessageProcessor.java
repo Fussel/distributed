@@ -7,6 +7,8 @@ package distributed.net;
 
 import distributed.dto.*;
 import distributed.main.MainFrame;
+import distributed.update.UpdateClient;
+import distributed.update.UpdateServer;
 import distributed.util.SettingsProvider;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -79,9 +81,13 @@ public class MessageProcessor extends Thread {
         String message = (String) msg.getObject();
         if (message.equals("update")) {
             log.debug("Update request");
-
+            new UpdateServer(STD_PORT).start();
+            DistributedCore.getInstance().sendMessage(new Message(msg.getSrc(), "server_opened"));
+            log.debug("Updateserver started");
         } else if("server_opened".equals(message)) {
-//            new IncrementalUpdate.UpdateClient(msg.get)
+            log.debug("Remote updateserver started");
+            new UpdateClient(msg.getSrc().toString(), STD_PORT);
+            log.debug("Updateclient started");
         } else if (message.equals("close")) {
             DistributedCore.getInstance().closeConnection();
             System.out.println("Logged out");
