@@ -15,5 +15,15 @@ public class LeaderUpdateServer extends IncrementalUpdate.UpdateServer {
     public LeaderUpdateServer(int port) {
         super(port);
     }
+
+    @Override
+    protected void prepareGroupMessageList() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected void preparePrivateMessageList() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
