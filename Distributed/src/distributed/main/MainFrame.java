@@ -1,10 +1,10 @@
 package distributed.main;
 
+import distributed.database.DatabaseManager;
 import distributed.dto.GroupMessage;
 import distributed.dto.IMessage;
 import distributed.dto.LeaderMessage;
 import distributed.dto.PrivateMessage;
-import distributed.main.AboutDialog;
 import distributed.msg.MsgDialog;
 import distributed.net.DistributedCore;
 import distributed.net.Messenger;
@@ -19,21 +19,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import org.jgroups.Message;
+import javax.swing.text.Position;
 
 /**
  *
@@ -122,7 +119,30 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
             }
 
         });
+        
+                JMenuItem jMenuItemDeleteMessage = new javax.swing.JMenuItem();
+        jMenuItemDeleteMessage.setText("Delete Message");
+        jMenuItemDeleteMessage.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("delete message");
+                //TODO ABfrage ob der user rechte hat
+                if (jList1.getSelectedIndex() > -1) {
+                    IMessage m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
+                    DatabaseManager.getInstance().markAsDeleted((GroupMessage)m);
+                    MyListModel model = (MyListModel)jList1.getModel();
+                    model.remove(jList1.getSelectedIndex());
+                    jList1.revalidate();
+                    jList1.repaint();
+                }
+                
+            }
+
+        });
+        
+        menu.add(jMenuItemDeleteMessage);
+        menu.add(new JPopupMenu.Separator());
         menu.add(jMenuItemDirectMessage);
         menu.add(new JPopupMenu.Separator());
         menu.add(jMenuItemShare);
@@ -451,6 +471,11 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
 
         public ArrayList<IMessage> getMessages() {
             return messages;
+        }
+        
+        public void remove(int position){
+            messages.remove(position);
+            
         }
 
     }
