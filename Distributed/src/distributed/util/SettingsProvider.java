@@ -21,7 +21,7 @@ import java.util.Properties;
 public class SettingsProvider {
 
     private static SettingsProvider instance;
-<<<<<<< HEAD
+
     private  Properties props;
     
     private static final String C_DB_NAME       = "distributed.sqlite";
@@ -30,16 +30,6 @@ public class SettingsProvider {
     private static final String C_PUB_KEY       = "/pub.key";
     private static final String C_PRI_KEY       = "/priv.key";
     
-=======
-    private Properties props;
-
-    private static final String C_DB_NAME = "/distributed.sqlite";
-    private static final String C_KEY_DIR = "/keys";
-    private static final String C_DB_DIR = "/db";
-    private static final String C_PUB_KEY = "/pub.key";
-    private static final String C_PRI_KEY = "/priv.key";
-
->>>>>>> origin/leaderchannel_dirverse_bugs
     //TODO Add all needed property tags
     private static final String USER_NAME = "user.name";
     private static final String USER_GROUP = "user.group";

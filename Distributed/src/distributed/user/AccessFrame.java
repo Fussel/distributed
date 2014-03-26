@@ -6,36 +6,21 @@
 package distributed.user;
 
 import distributed.main.MainFrame;
-import distributed.net.DistributedCore;
 import distributed.util.IpAdressAdapter;
 import distributed.util.SettingsProvider;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-<<<<<<< HEAD
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-=======
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
->>>>>>> origin/leaderchannel_dirverse_bugs
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author kiefer
  */
 public class AccessFrame extends javax.swing.JFrame {
+
     private static final Logger log = Logger.getLogger(AccessFrame.class);
     JFrame thisFrame;
 
@@ -43,14 +28,8 @@ public class AccessFrame extends javax.swing.JFrame {
      * Creates new form LoginFrame
      */
     public AccessFrame() {
-<<<<<<< HEAD
-        
-        //Setup the root logger
+        //Setup the root logger        
         Logger rootLogger = org.apache.log4j.Logger.getRootLogger();
-        
-        getIpList(); //get the ip list in ipList
-=======
->>>>>>> origin/leaderchannel_dirverse_bugs
         initComponents();
         thisFrame = this;
 
@@ -257,7 +236,7 @@ public class AccessFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCancelMouseClicked
 
     private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConnectActionPerformed
-               if (jTextFieldUsername.getText().isEmpty()) {
+        if (jTextFieldUsername.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this.getParent(), "Username is empty.");
             jTextFieldUsername.requestFocus();
         } else {
@@ -289,23 +268,18 @@ public class AccessFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void jComboBoxInterfaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxInterfaceActionPerformed
-       
+
     }//GEN-LAST:event_jComboBoxInterfaceActionPerformed
 
     public final ArrayList<String> getIpList() {
         IpAdressAdapter ipAdapter = new IpAdressAdapter();
         ArrayList<String> ipList = null;
-        try {
-<<<<<<< HEAD
-            DistributedCore.getInstance().configure(InetAddress.getByName(adress));
-        } catch (UnknownHostException ex) {
-            log.error(AccessFrame.class.getName());
-=======
-             ipList = ipAdapter.getNetworkInterfaces();
+        try {     
+            ipList = ipAdapter.getNetworkInterfaces();
         } catch (SocketException ex) {
-            Logger.getLogger(AccessFrame.class.getName()).log(Level.SEVERE, null, ex);
->>>>>>> origin/leaderchannel_dirverse_bugs
+             log.error(AccessFrame.class.getName());
         }
+  
         return ipList;
     }
 
@@ -344,23 +318,7 @@ public class AccessFrame extends javax.swing.JFrame {
         });
     }
 
-<<<<<<< HEAD
-    public final void getIpList() {
-        IpAdressAdapter ipAdapter = new IpAdressAdapter();
-        try {
-            ipList = ipAdapter.getNetworkInterfaces();
-            for (String ip : ipList) {
-                System.out.println("Active Ip = " + ip);
-            }
-
-        } catch (SocketException ex) {
-            log.error(AccessFrame.class.getName());
-        }
-        
-    }
-
-=======
->>>>>>> origin/leaderchannel_dirverse_bugs
+  
     public class MyThread extends Thread {
 
         @Override
