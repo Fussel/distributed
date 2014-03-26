@@ -46,28 +46,8 @@ public class PrivateMessage extends IMessage implements Serializable {
         int hash = 7;
         return hash;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        
-        if(!super.equals(obj))
-            return false;
-        if (obj == null) {
-            return false;
-        }
-        
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        
-        final PrivateMessage other = (PrivateMessage) obj;
-        
-        if (!Objects.equals(this.receiver, other.receiver)) {
-            return false;
-        }
-        
-        return true;
-    }
-
     
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 }

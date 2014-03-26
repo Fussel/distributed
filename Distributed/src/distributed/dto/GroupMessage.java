@@ -48,4 +48,8 @@ public class GroupMessage extends IMessage implements Serializable {
     public String getMessageString() {
         return new String(message);
     }
+    
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 }
