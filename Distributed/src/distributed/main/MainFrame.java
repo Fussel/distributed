@@ -11,9 +11,11 @@ import distributed.net.Messenger;
 import distributed.net.Messenger.MessageCallback;
 import distributed.settings.SettingsDialog;
 import distributed.user.AccessFrame;
+import distributed.user.ChangeMessageDialog;
 import distributed.util.DateUtils;
 import distributed.util.DistributedKrypto;
 import distributed.util.SettingsProvider;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -25,9 +27,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.text.Position;
@@ -119,8 +123,8 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
             }
 
         });
-        
-                JMenuItem jMenuItemDeleteMessage = new javax.swing.JMenuItem();
+
+        JMenuItem jMenuItemDeleteMessage = new javax.swing.JMenuItem();
         jMenuItemDeleteMessage.setText("Delete Message");
         jMenuItemDeleteMessage.addActionListener(new ActionListener() {
 
@@ -130,17 +134,43 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
                 //TODO ABfrage ob der user rechte hat
                 if (jList1.getSelectedIndex() > -1) {
                     IMessage m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
-                    DatabaseManager.getInstance().markAsDeleted((GroupMessage)m);
-                    MyListModel model = (MyListModel)jList1.getModel();
+                    DatabaseManager.getInstance().markAsDeleted((GroupMessage) m);
+                    MyListModel model = (MyListModel) jList1.getModel();
                     model.remove(jList1.getSelectedIndex());
                     jList1.revalidate();
                     jList1.repaint();
                 }
-                
+
             }
 
         });
-        
+        JMenuItem jMenuItemChangeMessage = new javax.swing.JMenuItem();
+        jMenuItemChangeMessage.setText("Change Message");
+        jMenuItemChangeMessage.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("change message");
+                //TODO ABfrage ob der user rechte hat
+                if (jList1.getSelectedIndex() > -1) {
+                    IMessage m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
+
+                    Frame ChangeMessageDialog = null;
+                    ChangeMessageDialog changeDialog = new ChangeMessageDialog(MainFrame.this, true);
+                    changeDialog.setText(m); //set jtextarea in the dialog
+                    changeDialog.setVisible(true);
+                    MyListModel model = (MyListModel) jList1.getModel();
+                    model.changeMsg(jList1.getSelectedIndex(), changeDialog.getText());
+                    jList1.revalidate();
+                    jList1.repaint();
+                }
+
+            }
+
+        });
+
+        menu.add(jMenuItemChangeMessage);
+        menu.add(new JPopupMenu.Separator());
         menu.add(jMenuItemDeleteMessage);
         menu.add(new JPopupMenu.Separator());
         menu.add(jMenuItemDirectMessage);
@@ -319,7 +349,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
             DistributedCore.getInstance().disconnectLeaderChannel();
             SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.USER);
         }
-        
+
         AccessFrame mAccessFrame = new AccessFrame();
         mAccessFrame.setLocationRelativeTo(this);
         mAccessFrame.setVisible(true);
@@ -472,16 +502,19 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
         public ArrayList<IMessage> getMessages() {
             return messages;
         }
-        
-        public void remove(int position){
+
+        public void remove(int position) {
             messages.remove(position);
-            
+
+        }
+
+        public void changeMsg(int position, String newMsg) {
+            IMessage msg = messages.get(position);
+            msg.setMessage(newMsg.getBytes());
         }
 
     }
 
-
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler3;
