@@ -77,7 +77,7 @@ public class DistributedCore {
         moderator = false;
 
         try {
-             userName = SettingsProvider.getInstance().getUserName();
+            userName = SettingsProvider.getInstance().getUserName();
             //TODO register the listeners
             groupChannel = new JChannel(false);
             stack = new ProtocolStack();
@@ -89,7 +89,6 @@ public class DistributedCore {
             //leaderChannel = new JChannel();
             //TODO Set the operator flag
             userList = new ArrayList<>();
-     
 
             mLeaderStack = new ProtocolStack();
         } catch (Exception e) {
@@ -98,6 +97,7 @@ public class DistributedCore {
         }
 
         if (leaderChannel == null) {
+            System.out.println("TEST");
             leaderChannel = new JChannel(false);
             mLeaderStack = new ProtocolStack();
             leaderChannel.setProtocolStack(mLeaderStack);
@@ -121,12 +121,10 @@ public class DistributedCore {
             groupChannel.connect(groupName);
             System.out.println("Group-Channel joined: " + groupChannel.getClusterName());
             System.out.println(groupChannel.getViewAsString());
-            
+
             bootStrap();
 
             //TODO Check other members
-   
-            
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -243,42 +241,36 @@ public class DistributedCore {
             groupChannel.close();
         }
     }
-    
+
     public void disconnectLeaderChannel() {
-        
+
         leaderChannel.disconnect();
         //bootStrap();
         View view = groupChannel.getView();
         if (view.getMembers().size() > 1) {
-        try {
-            leaderChannel.connect(LEADER_CHANNEL, view.getMembers().get(view.getMembers().size() - 1) , (long) 0.0);
-        } catch (Exception ex) {
-            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            try {
+                leaderChannel.connect(LEADER_CHANNEL, view.getMembers().get(view.getMembers().size() - 1), (long) 0.0);
+            } catch (Exception ex) {
+                Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             groupChannel.close();
-        }  
+        }
     }
-
 
     private void bootStrap() {
         System.out.println("Bootstrap started");
         View view = groupChannel.getView();
-        
-        
+
         System.out.println("Creator: " + view.getCreator());
         //TODO 
         if (view.getMembers().size() <= 1) {
 
             isLeader = true;
-            try {
-                leaderChannel.connect(LEADER_CHANNEL);
-                System.out.println("Channel joined: " + leaderChannel.getClusterName());
-                //
-                SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.MODERATOR);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            joinLeaderChannel();
+            System.out.println("Channel joined: " + leaderChannel.getClusterName());
+            //
+            SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.MODERATOR);
         } else {
             System.out.println("--------------------------------------");
 
@@ -292,6 +284,14 @@ public class DistributedCore {
         //Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
         //sendMessage(new Message(u, "update"));
         //TODO Start the update
+    }
+
+    public void disconnectGroupChannelChannel() {
+       groupChannel.disconnect();
+       
+       if (groupChannel.getView().getMembers().isEmpty()) {
+           closeGroupConnection();
+       }
     }
 
     private class GroupListener extends ReceiverAdapter {

@@ -48,7 +48,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
 
         //Starte Programm
         Messenger.getInstance().addMessageListener(this);
-
+        SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.USER);
         if (SettingsProvider.getInstance().getUserInterface() != null) {
             try {
                 DistributedCore.getInstance().configure(InetAddress.getByName(SettingsProvider.getInstance().getUserInterface()));
@@ -313,12 +313,15 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
 
     private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
         this.setVisible(false);
-
+        
+        System.out.println(DistributedCore.getInstance().isLeader);
+        
         if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) {
             DistributedCore.getInstance().isLeader = false;
             DistributedCore.getInstance().disconnectLeaderChannel();
-            SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.USER);
         }
+        
+        DistributedCore.getInstance().disconnectGroupChannelChannel();
         
         AccessFrame mAccessFrame = new AccessFrame();
         mAccessFrame.setLocationRelativeTo(this);
@@ -334,6 +337,8 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
     }//GEN-LAST:event_jButtonSettingsActionPerformed
 
     private void jButtonAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAboutActionPerformed
+        
+        System.out.println(DistributedCore.getInstance().isLeader);
         JFrame rootWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
         AboutDialog dialog = new AboutDialog(rootWindow, true);
         dialog.setTitle("About");
