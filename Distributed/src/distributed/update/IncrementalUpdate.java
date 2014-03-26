@@ -26,20 +26,20 @@ public class IncrementalUpdate implements IDistributedUpdate {
     
     private static final Logger log = Logger.getLogger(IncrementalUpdate.class.getName());
     
-    public static class UpdateServer extends Thread implements IDistributedUpdate.Server {
-        private static final Logger log = Logger.getLogger(IncrementalUpdate.UpdateServer.class.getName());
+    public abstract static class UpdateServer extends Thread implements IDistributedUpdate.Server {
+        protected static final Logger log = Logger.getLogger(IncrementalUpdate.UpdateServer.class.getName());
         
-        private List<IMessage>          objectBuffer;
-        private List<IMessage>          updateQueue;
-        private List<IMessage>          sublist;
+        protected List<IMessage>          objectBuffer;
+        protected List<IMessage>          updateQueue;
+        protected List<IMessage>          sublist;
         
-        private ServerSocket            server;
-        private Socket                  client;
+        protected ServerSocket            server;
+        protected Socket                  client;
         
-        private ObjectInputStream ois;
-        private ObjectOutputStream oos;
+        protected ObjectInputStream ois;
+        protected ObjectOutputStream oos;
         
-        private boolean inProgress;
+        protected boolean inProgress;
         
         public UpdateServer(int port) {
             log.debug("Init UpdateServer");
@@ -52,19 +52,9 @@ public class IncrementalUpdate implements IDistributedUpdate {
             }
         }       
         
-        private void prepareGroupMessageList() {
-            objectBuffer = new ArrayList<>();
-            objectBuffer.addAll(DatabaseManager.getInstance().loadPosts());
-            Collections.sort(objectBuffer);
-            log.debug("Posts load into object buffer");
-        }
+        protected abstract void prepareGroupMessageList(); 
         
-        private void preparePrivateMessageList() {
-            objectBuffer = new ArrayList<>();
-            objectBuffer.addAll(DatabaseManager.getInstance().getAllPrivateMessages());
-            Collections.sort(objectBuffer);
-            log.debug("PrivateMessages added to objectBuffer");
-        }
+        protected abstract void preparePrivateMessageList();
         
         private void processMessage(Object o) {
             
@@ -204,15 +194,15 @@ public class IncrementalUpdate implements IDistributedUpdate {
     }
     
     public static class UpdateClient extends Thread implements IDistributedUpdate.Client {
-        private static final Logger log = Logger.getLogger(IncrementalUpdate.UpdateClient.class.getName());
-        private ArrayList<IMessage> objectBuffer;
-        private Socket client;
+        protected static final Logger log = Logger.getLogger(IncrementalUpdate.UpdateClient.class.getName());
+        protected ArrayList<IMessage> objectBuffer;
+        protected Socket client;
         
-        private ObjectInputStream ois;
-        private ObjectOutputStream oos;
+        protected ObjectInputStream ois;
+        protected ObjectOutputStream oos;
         
-        String ip;
-        int port;
+        protected String ip;
+        protected int port;
         
         public UpdateClient(String ip, int port) {
             log.debug("Initialising UpdateClient");
