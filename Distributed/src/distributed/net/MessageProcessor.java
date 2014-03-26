@@ -7,9 +7,11 @@ package distributed.net;
 
 import distributed.dto.*;
 import distributed.main.MainFrame;
+import distributed.update.IncrementalUpdate;
 import distributed.util.SettingsProvider;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import org.apache.log4j.Logger;
 import org.jgroups.Address;
 import org.jgroups.Message;
 
@@ -18,10 +20,14 @@ import org.jgroups.Message;
  * @author steffen
  */
 public class MessageProcessor extends Thread {
+    
+    private static final Logger log = Logger.getLogger(MessageProcessor.class);
 
     private static MessageProcessor instance;
     private BlockingQueue<Message> jobQueue;
     private boolean isRunning;
+    
+    private static final int STD_PORT = 56348;
 
     public static synchronized MessageProcessor getInstance() {
         if (instance == null) {
@@ -49,6 +55,9 @@ public class MessageProcessor extends Thread {
                 } else if (msg.getObject() instanceof GroupMessage) {
                     // TODO: store in local database
                     Messenger.getInstance().addGroupMessage((GroupMessage) msg.getObject());
+                } else if (msg.getObject() instanceof LeaderMessage) {
+                    // TODO: store in local database
+                     Messenger.getInstance().addLeaderMessage((LeaderMessage) msg.getObject());
                 } else if (msg.getObject() instanceof String) {
                     processStringMessage(msg);
                 } else if (msg.getObject() instanceof PrivateMessage) {
@@ -70,7 +79,10 @@ public class MessageProcessor extends Thread {
     private void processStringMessage(Message msg) {
         String message = (String) msg.getObject();
         if (message.equals("update")) {
-            System.out.println("Update request");
+            log.debug("Update request");
+
+        } else if("server_opened".equals(message)) {
+//            new IncrementalUpdate.UpdateClient(msg.get)
         } else if (message.equals("close")) {
             DistributedCore.getInstance().closeConnection();
             System.out.println("Logged out");

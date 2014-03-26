@@ -30,16 +30,14 @@ import sun.misc.BASE64Encoder;
  */
 public class DistributedKrypto {
     private static DistributedKrypto instance;
-    private static final String CIPHER_FORM = "RSA/ECB/PKCS1Padding";
-    private static final String ALGORITHM = "RSA";
-    private static final int KEY_LENGHT = 1024;
+    private static final String CIPHER_FORM     = "RSA/ECB/PKCS1Padding";
+    private static final String ALGORITHM       = "RSA";
+    private static final int KEY_LENGHT         = 1024;
     
-    private static final String PRIVATE_FILE = "private.key";
-    private static final String PUBLIC_FILE = "public.key";
+    private final String PRIVATE_FILE;
+    private final String PUBLIC_FILE;
     //TODO Auslagern des BaseDirs
-    private static final String DIR = System.getProperty("user.home") +
-            System.getProperty("file.separator") + "Distributed" 
-            + System.getProperty("file.separator");
+    private final String DIR;
     
     private PrivateKey privateKey;
     private PublicKey publicKey;
@@ -56,6 +54,12 @@ public class DistributedKrypto {
     
     private DistributedKrypto() {
         File privateFile, publicFile;
+        
+        DIR = SettingsProvider.getInstance().getRootDir() + 
+                SettingsProvider.getInstance().getKeyDir();
+        
+        PRIVATE_FILE = SettingsProvider.getInstance().getPrivateKeyName();
+        PUBLIC_FILE = SettingsProvider.getInstance().getPublicKeyName();
         
         privateFile = new File(DIR + PRIVATE_FILE);
         publicFile = new File(DIR + PUBLIC_FILE);
@@ -96,7 +100,7 @@ public class DistributedKrypto {
         //Create dir
         File dir = new File(DIR);
         if(!dir.exists())
-            dir.mkdir();
+            dir.mkdirs();
         
         dir = null;
         //Store publickey
@@ -209,7 +213,7 @@ public class DistributedKrypto {
      * 
      * <b>The byte array must be unmodified to prevent invalid block 
      * segmentations</b>
-     * 
+     *
      * @param data The byte array which should be decrypted.
      * @return The decrypted string representation of the array.
      */
@@ -223,7 +227,17 @@ public class DistributedKrypto {
             e.printStackTrace();
             return null;
         }
-    }  
+    } 
+    
+    /**
+     * Easy access the string representation of the 
+     * public key.
+     * 
+     * @return 
+     */
+    public String getPUblicKeyString() {
+        return publicKeyToString(publicKey);
+    }
     
     /**
      * Converts a public key to a string for easy storing.

@@ -43,11 +43,15 @@
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jComboBoxGroup" pref="288" max="32767" attributes="0"/>
                           <Component id="jTextFieldMsg" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Component id="jLabelUser" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jComboBoxGroup" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jCheckBoxLeaderGroup" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -68,13 +72,14 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabelGroup" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jComboBoxGroup" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jCheckBoxLeaderGroup" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabelUser" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="28" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jButtonOk" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButtonCancel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -142,6 +147,11 @@
     <Component class="javax.swing.JLabel" name="jLabelUser">
       <Properties>
         <Property name="text" type="java.lang.String" value="all"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="jCheckBoxLeaderGroup">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Leadergroup"/>
       </Properties>
     </Component>
   </SubComponents>

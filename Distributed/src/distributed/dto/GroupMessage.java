@@ -9,6 +9,7 @@ package distributed.dto;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import distributed.util.SettingsProvider;
 import java.io.Serializable;
 import java.security.PublicKey;
 
@@ -21,8 +22,8 @@ public class GroupMessage extends IMessage implements Serializable {
     
     public static final String TABLE_NAME           = "group_message";
     public final static String COL_NAME_PUBLIC_KEY  = "public_key";
-
     
+
     @DatabaseField(columnName = COL_NAME_PUBLIC_KEY)
     private String key;
 
@@ -32,9 +33,8 @@ public class GroupMessage extends IMessage implements Serializable {
     }
         
     public GroupMessage(String key, String message) {
-        super("", message.getBytes());
+        super(SettingsProvider.getInstance().getUserName(), message.getBytes());
         this.key = key;
-        //TODO Set sender prop      
     }
 
     public String getKey() {
@@ -45,7 +45,11 @@ public class GroupMessage extends IMessage implements Serializable {
         this.key = key;
     }
     
-//    public String getMessage() {
-//        return new String()
-//    }
+    public String getMessageString() {
+        return new String(message);
+    }
+    
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 }
