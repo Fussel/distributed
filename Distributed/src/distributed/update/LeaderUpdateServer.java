@@ -7,7 +7,6 @@
 package distributed.update;
 
 import distributed.database.DatabaseManager;
-import static distributed.update.IncrementalUpdate.UpdateClient.log;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -15,7 +14,7 @@ import java.util.Collections;
  *
  * @author steffen
  */
-public class LeaderUpdateServer extends IncrementalUpdate.UpdateServer {
+public class LeaderUpdateServer extends AUpdateServer {
 
     public LeaderUpdateServer(int port) {
         super(port);

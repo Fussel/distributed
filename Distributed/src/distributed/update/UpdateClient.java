@@ -7,7 +7,6 @@
 package distributed.update;
 
 import distributed.database.DatabaseManager;
-import static distributed.update.IncrementalUpdate.UpdateClient.log;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -15,7 +14,7 @@ import java.util.Collections;
  *
  * @author steffen
  */
-public class UpdateClient extends IncrementalUpdate.UpdateClient {
+public class UpdateClient extends AUpdateClient {
 
     public UpdateClient(String ip, int port) {
         super(ip, port);

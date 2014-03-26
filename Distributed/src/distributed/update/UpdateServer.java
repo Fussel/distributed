@@ -14,7 +14,7 @@ import java.util.Collections;
  *
  * @author steffen
  */
-public class UpdateServer extends IncrementalUpdate.UpdateServer {
+public class UpdateServer extends AUpdateServer {
 
     public UpdateServer(int port) {
         super(port);

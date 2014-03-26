@@ -14,7 +14,7 @@ import java.util.Collections;
  *
  * @author steffen
  */
-public class LeaderUpdateClient extends IncrementalUpdate.UpdateClient {
+public class LeaderUpdateClient extends AUpdateClient {
 
     public LeaderUpdateClient(String ip, int port) {      
         super(ip, port);
