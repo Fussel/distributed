@@ -2,7 +2,8 @@ package distributed.test;
 
 
 import distributed.update.IDistributedUpdate;
-import distributed.update.IncrementalUpdate;
+import distributed.update.UpdateClient;
+import distributed.update.UpdateServer;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
@@ -24,11 +25,11 @@ public class UpdateTest {
     public static void main(String[] args) {
         Logger rootLogger = Logger.getRootLogger();
         
-//        IncrementalUpdate.UpdateServer us = new IncrementalUpdate.UpdateServer(4711);
-//        us.start();
-//        
-//        IncrementalUpdate.UpdateClient uc = new IncrementalUpdate.UpdateClient("127.0.0.1", 4711);
-//        uc.start();
+        UpdateServer us = new UpdateServer(4711);       
+        us.start();
+        
+        UpdateClient uc = new UpdateClient("127.0.0.1", 4711);
+        uc.start();
     }
     
 }
