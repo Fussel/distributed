@@ -193,7 +193,7 @@ public class IncrementalUpdate implements IDistributedUpdate {
         }
     }
     
-    public static class UpdateClient extends Thread implements IDistributedUpdate.Client {
+    public abstract static class UpdateClient extends Thread implements IDistributedUpdate.Client {
         protected static final Logger log = Logger.getLogger(IncrementalUpdate.UpdateClient.class.getName());
         protected ArrayList<IMessage> objectBuffer;
         protected Socket client;
@@ -210,19 +210,9 @@ public class IncrementalUpdate implements IDistributedUpdate {
             this.port = port;
         }
         
-        private void loadGroupMessages() {
-            objectBuffer = new ArrayList<>();
-            objectBuffer.addAll(DatabaseManager.getInstance().loadPosts());
-            Collections.sort(objectBuffer);
-            log.debug("GroupMessages load into objectBuffer");
-        }
+        protected abstract void loadGroupMessages(); 
         
-        private void loadPrivateMessages() {
-            objectBuffer = new ArrayList<>();
-            objectBuffer.addAll(DatabaseManager.getInstance().getAllPrivateMessages());
-            Collections.sort(objectBuffer);
-            log.debug("PrivateMessages load into objectBuffer");
-        }
+        protected abstract void loadPrivateMessages(); 
         
         /**
          * Processing the received objects.
