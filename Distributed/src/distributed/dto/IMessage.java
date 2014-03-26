@@ -32,19 +32,19 @@ public class IMessage implements Serializable, Comparable {
     public static final String COL_NAME_SHARED  = "shared";
     
     @DatabaseField(id=true)
-    private UUID  messageUUID;
+    protected UUID  messageUUID;
     @DatabaseField(columnName = COL_NAME_DATE)
-    private long    sendDate;
+    protected long    sendDate;
     @DatabaseField(columnName = COL_NAME_SENDER)
-    private String  sender;
+    protected String  sender;
     @DatabaseField(columnName = COL_NAME_MESSAGE, dataType = DataType.BYTE_ARRAY)
     protected byte[]  message;
     @DatabaseField(columnName = COL_NAME_DIRTY)
-    private boolean dirtyBit;
+    protected boolean dirtyBit;
     @DatabaseField(columnName = COL_NAME_DELETED)
-    private boolean deleted;
+    protected boolean deleted;
     @DatabaseField(columnName = COL_NAME_SHARED)
-    private boolean shared;
+    protected boolean shared;
     
     
     public IMessage() {
@@ -124,17 +124,9 @@ public class IMessage implements Serializable, Comparable {
         if (getClass() != obj.getClass()) {
             return false;
         }
+        
         final IMessage other = (IMessage) obj;
         if (!Objects.equals(this.messageUUID, other.messageUUID)) {
-            return false;
-        }
-        if (this.sendDate != other.sendDate) {
-            return false;
-        }
-        if (!Objects.equals(this.sender, other.sender)) {
-            return false;
-        }
-        if (!Arrays.equals(this.message, other.message)) {
             return false;
         }
         return true;
