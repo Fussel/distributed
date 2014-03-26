@@ -245,17 +245,19 @@ public class DistributedCore {
     public void disconnectLeaderChannel() {
 
         leaderChannel.disconnect();
-        //bootStrap();
-        View view = groupChannel.getView();
-        if (view.getMembers().size() > 1) {
-            try {
-                leaderChannel.connect(LEADER_CHANNEL, view.getMembers().get(view.getMembers().size() - 1), (long) 0.0);
-            } catch (Exception ex) {
-                Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            groupChannel.close();
-        }
+        
+          View view = groupChannel.getView();
+          for (Address a : view.getMembers()) {
+              if (a == view.getCreator()) {
+                  try {
+                      leaderChannel.connect(LEADER_CHANNEL, a, (long) 0.0);
+                      System.out.println("Neuer User als Leader:" + a.toString());
+                  } catch (Exception ex) {
+                      Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
+                  }
+              }
+          }
+        
     }
 
     private void bootStrap() {
@@ -271,27 +273,22 @@ public class DistributedCore {
             System.out.println("Channel joined: " + leaderChannel.getClusterName());
             //
             SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.MODERATOR);
+        } else if (!isLeader) {
+            System.out.println("Es gibt keine Leader mehr..");
         } else {
-            System.out.println("--------------------------------------");
-
             for (Address a : view.getMembers()) {
                 System.out.println(a.toString());
 
             }
-            System.out.println("--------------------------------------");
         }
-
-        //Address u = view.getMembers().get((int) (view.getMembers().size() * Math.random()));
-        //sendMessage(new Message(u, "update"));
-        //TODO Start the update
     }
 
     public void disconnectGroupChannelChannel() {
-       groupChannel.disconnect();
-       
-       if (groupChannel.getView().getMembers().isEmpty()) {
-           closeGroupConnection();
-       }
+        groupChannel.disconnect();
+
+        if (groupChannel.getView().getMembers().isEmpty()) {
+            closeGroupConnection();
+        }
     }
 
     private class GroupListener extends ReceiverAdapter {

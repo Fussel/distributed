@@ -321,7 +321,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
             DistributedCore.getInstance().disconnectLeaderChannel();
         }
         
-        DistributedCore.getInstance().disconnectGroupChannelChannel();
+        //DistributedCore.getInstance().disconnectGroupChannelChannel();
         
         AccessFrame mAccessFrame = new AccessFrame();
         mAccessFrame.setLocationRelativeTo(this);
