@@ -22,10 +22,7 @@ import org.apache.log4j.PatternLayout;
 public class UpdateTest {
     
     public static void main(String[] args) {
-        Layout layout = new PatternLayout("%d{yyyy-MM-dd---HH-mm-ss-SSS} %5p %c: %m%n");
         Logger rootLogger = Logger.getRootLogger();
-        rootLogger.setLevel(Level.DEBUG);
-        rootLogger.addAppender(new ConsoleAppender(layout));
         
         IncrementalUpdate.UpdateServer us = new IncrementalUpdate.UpdateServer(4711);
         us.start();
