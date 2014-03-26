@@ -29,6 +29,7 @@ public class IMessage implements Serializable, Comparable {
     public static final String COL_NAME_DIRTY   = "dirty_bit";
     public static final String COL_NAME_ID      = "id";
     public static final String COL_NAME_DELETED = "deleted";
+    public static final String COL_NAME_SHARED  = "shared";
     
     @DatabaseField(id=true)
     private UUID  messageUUID;
@@ -42,6 +43,8 @@ public class IMessage implements Serializable, Comparable {
     private boolean dirtyBit;
     @DatabaseField(columnName = COL_NAME_DELETED)
     private boolean deleted;
+    @DatabaseField(columnName = COL_NAME_SHARED)
+    private boolean shared;
     
     
     public IMessage() {
@@ -52,6 +55,7 @@ public class IMessage implements Serializable, Comparable {
         this.sendDate       = System.currentTimeMillis();
         this.sender         = sender;
         this.message        = message;
+        this.deleted        = deleted;
         this.messageUUID    = UUID.randomUUID();
     }
 
@@ -92,6 +96,14 @@ public class IMessage implements Serializable, Comparable {
     
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+    
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
+    
+    public boolean getShared() {
+        return shared;
     }
 
     @Override
