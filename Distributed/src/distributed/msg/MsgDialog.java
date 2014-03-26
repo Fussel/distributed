@@ -47,7 +47,7 @@ public class MsgDialog extends javax.swing.JDialog {
         } 
         
         if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) {
-            jCheckBoxLeaderGroup.setVisible(false);
+            jCheckBoxLeaderGroup.setVisible(true);
         } else {
            jCheckBoxLeaderGroup.setVisible(false);
         } 
