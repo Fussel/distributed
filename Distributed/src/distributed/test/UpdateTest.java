@@ -24,11 +24,11 @@ public class UpdateTest {
     public static void main(String[] args) {
         Logger rootLogger = Logger.getRootLogger();
         
-        IncrementalUpdate.UpdateServer us = new IncrementalUpdate.UpdateServer(4711);
-        us.start();
-        
-        IncrementalUpdate.UpdateClient uc = new IncrementalUpdate.UpdateClient("127.0.0.1", 4711);
-        uc.start();
+//        IncrementalUpdate.UpdateServer us = new IncrementalUpdate.UpdateServer(4711);
+//        us.start();
+//        
+//        IncrementalUpdate.UpdateClient uc = new IncrementalUpdate.UpdateClient("127.0.0.1", 4711);
+//        uc.start();
     }
     
 }
