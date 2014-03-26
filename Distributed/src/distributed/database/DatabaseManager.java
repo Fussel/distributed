@@ -12,6 +12,7 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import distributed.dto.GroupMessage;
+import distributed.dto.IMessage;
 import distributed.dto.PrivateMessage;
 import distributed.dto.User;
 import distributed.util.SettingsProvider;
@@ -155,6 +156,17 @@ public class DatabaseManager {
         return -1;
     }
     
+    public List<GroupMessage> getAllSharedPosts() {
+        try {
+            return postDao.query(postDao.queryBuilder().where()
+            .eq(IMessage.COL_NAME_SHARED, "1").prepare());
+        } catch(SQLException sql) {
+            log.error(sql);
+        }
+        
+        return null;
+    } 
+    
     public List<PrivateMessage> getAllPrivateMessages() {
         try {
             return privateMessageDao.queryForAll();
@@ -171,7 +183,33 @@ public class DatabaseManager {
         return msg;
     }
     
-    public void markAsDeleted(GroupMessage msg) {
+    public void setPostAsShared(GroupMessage msg) {
+        msg.setShared(true);
         
+        try {
+            postDao.update(msg);
+        } catch(SQLException sql) {
+            log.error(sql);
+        }
+    }
+    
+    public void markAsDeleted(GroupMessage msg) {
+        msg.setDeleted(true);
+        
+        try {
+            postDao.update(msg);
+        } catch(SQLException sql) {
+            log.error(sql);
+        }
+    }
+    
+    public void editMessage(GroupMessage msg, String newMessage) {
+        msg.setMessage(newMessage.getBytes());
+        
+        try {
+            postDao.update(msg);
+        } catch(SQLException sql) {
+            log.error(sql);
+        }
     }
 }
