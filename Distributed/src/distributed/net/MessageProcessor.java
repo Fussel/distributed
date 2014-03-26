@@ -7,7 +7,6 @@ package distributed.net;
 
 import distributed.dto.*;
 import distributed.main.MainFrame;
-import distributed.update.IncrementalUpdate;
 import distributed.util.SettingsProvider;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
