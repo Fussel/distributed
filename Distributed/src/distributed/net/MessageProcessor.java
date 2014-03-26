@@ -55,6 +55,9 @@ public class MessageProcessor extends Thread {
                 } else if (msg.getObject() instanceof GroupMessage) {
                     // TODO: store in local database
                     Messenger.getInstance().addGroupMessage((GroupMessage) msg.getObject());
+                } else if (msg.getObject() instanceof LeaderMessage) {
+                    // TODO: store in local database
+                     Messenger.getInstance().addLeaderMessage((LeaderMessage) msg.getObject());
                 } else if (msg.getObject() instanceof String) {
                     processStringMessage(msg);
                 } else if (msg.getObject() instanceof PrivateMessage) {

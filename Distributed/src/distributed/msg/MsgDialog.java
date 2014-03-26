@@ -7,10 +7,12 @@ package distributed.msg;
 
 import distributed.dto.GroupMessage;
 import distributed.dto.IMessage;
+import distributed.dto.LeaderMessage;
 import distributed.dto.PrivateMessage;
 import distributed.net.DistributedCore;
 import distributed.util.DistributedKrypto;
 import distributed.util.MessageHelper;
+import distributed.util.SettingsProvider;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
@@ -33,7 +35,7 @@ public class MsgDialog extends javax.swing.JDialog {
         mMessage = message;
 
         if (message != null && (message instanceof GroupMessage)) {
-            jTextFieldMsg.setText(DistributedKrypto.getInstance().decryptMessage(message.getMessage()));
+            jTextFieldMsg.setText(new String(message.getMessage()));
             jComboBoxGroup.setEnabled(true);
         } 
 
@@ -43,6 +45,10 @@ public class MsgDialog extends javax.swing.JDialog {
             jTextFieldMsg.setText("");
             jComboBoxGroup.setEnabled(false);
         } 
+        
+        if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.USER) {
+            jCheckBoxLeaderGroup.setVisible(false);
+        }
 
     }
 
@@ -71,6 +77,7 @@ public class MsgDialog extends javax.swing.JDialog {
         jTextFieldMsg = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabelUser = new javax.swing.JLabel();
+        jCheckBoxLeaderGroup = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addKeyListener(new java.awt.event.KeyAdapter() {
@@ -123,6 +130,8 @@ public class MsgDialog extends javax.swing.JDialog {
 
         jLabelUser.setText("all");
 
+        jCheckBoxLeaderGroup.setText("Leadergroup");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -142,11 +151,14 @@ public class MsgDialog extends javax.swing.JDialog {
                             .addComponent(jLabelMsg, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBoxGroup, 0, 288, Short.MAX_VALUE)
                             .addComponent(jTextFieldMsg)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelUser)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jComboBoxGroup, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBoxLeaderGroup)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -159,12 +171,13 @@ public class MsgDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelGroup)
-                    .addComponent(jComboBoxGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBoxGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCheckBoxLeaderGroup))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabelUser))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonOk)
                     .addComponent(jButtonCancel))
@@ -187,9 +200,11 @@ public class MsgDialog extends javax.swing.JDialog {
         } else {
             if (reciever != null) {
                 mMessage = new PrivateMessage(reciever, DistributedKrypto.getInstance().encryptString(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
+            } else if ( (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) && (jCheckBoxLeaderGroup.isSelected())) {
+                mMessage = new LeaderMessage(jTextFieldMsg.getText());
             } else {
                 mMessage = new GroupMessage(DistributedKrypto.getInstance().publicKeyToString(DistributedKrypto.getInstance().getMyPublicKey()),
-                        jTextFieldMsg.getText());
+                jTextFieldMsg.getText());
             }
 
             this.dispose();
@@ -219,6 +234,7 @@ public class MsgDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonOk;
+    private javax.swing.JCheckBox jCheckBoxLeaderGroup;
     private javax.swing.JComboBox jComboBoxGroup;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelGroup;

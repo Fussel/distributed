@@ -7,6 +7,7 @@ package distributed.dto;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import distributed.util.SettingsProvider;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -28,9 +29,8 @@ public class PrivateMessage extends IMessage implements Serializable {
     }
 
     public PrivateMessage(String receiver, byte[] message) {
-        super("", message);
+        super(SettingsProvider.getInstance().getUserName(), message);
         this.receiver = receiver;
-        //TODO Set sender Prop
     }
 
     public String getReceiver() {

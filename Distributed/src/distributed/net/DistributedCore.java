@@ -5,12 +5,17 @@
  */
 package distributed.net;
 
+import distributed.dto.GroupMessage;
+import distributed.dto.LeaderMessage;
+import distributed.dto.PrivateMessage;
 import distributed.util.SettingsProvider;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JList;
 import javax.swing.JTextPane;
 import org.jgroups.Address;
@@ -44,17 +49,17 @@ public class DistributedCore {
     private JChannel groupChannel;
     private JChannel leaderChannel;
     private String userName;
-    private boolean isLeader;
+    public boolean isLeader;
     public final boolean moderator;
     private Address leader;
 
     private static DistributedCore instance;
 
     private ProtocolStack stack;
+    ProtocolStack mLeaderStack;
     private InetAddress networkInterface;
 
     private List<String> userList; // only for testing
-
 
     public static DistributedCore getInstance() {
         if (instance == null) {
@@ -63,7 +68,7 @@ public class DistributedCore {
 
         return instance;
     }
-    
+
     public String getUserName() {
         return userName;
     }
@@ -72,9 +77,11 @@ public class DistributedCore {
         moderator = false;
 
         try {
+             userName = SettingsProvider.getInstance().getUserName();
             //TODO register the listeners
             groupChannel = new JChannel(false);
             stack = new ProtocolStack();
+
             groupChannel.setProtocolStack(stack);
             groupChannel.setReceiver(new GroupListener());
             groupChannel.setName(SettingsProvider.getInstance().getUserName() + "-" + Math.random());
@@ -82,10 +89,22 @@ public class DistributedCore {
             //leaderChannel = new JChannel();
             //TODO Set the operator flag
             userList = new ArrayList<>();
+     
+
+            mLeaderStack = new ProtocolStack();
         } catch (Exception e) {
             e.printStackTrace();
             //TODO Log the event
         }
+
+        if (leaderChannel == null) {
+            leaderChannel = new JChannel(false);
+            mLeaderStack = new ProtocolStack();
+            leaderChannel.setProtocolStack(mLeaderStack);
+            leaderChannel.setReceiver(new LeaderListener());
+            //leaderChannel.setName(SettingsProvider.getInstance().getUserName() + "-" + Math.random());
+        }
+
     }
 
     /**
@@ -102,9 +121,12 @@ public class DistributedCore {
             groupChannel.connect(groupName);
             System.out.println("Group-Channel joined: " + groupChannel.getClusterName());
             System.out.println(groupChannel.getViewAsString());
-           // bootStrap();
+            
+            bootStrap();
 
             //TODO Check other members
+   
+            
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,7 +150,8 @@ public class DistributedCore {
         networkInterface = interfaceAddress;
 
         try {
-            instance.buildigProtocollStack();
+            instance.buildigProtocollStack(stack);
+            instance.buildigProtocollStack(mLeaderStack);
 //        } catch(UnconfiguredException e) {
         } catch (Exception e) {
             e.printStackTrace();
@@ -140,12 +163,12 @@ public class DistributedCore {
      *
      * @throws UnconfiguredException
      */
-    private void buildigProtocollStack() throws RuntimeException {
+    private void buildigProtocollStack(ProtocolStack s) throws RuntimeException {
 
         if (networkInterface == null) {
             throw new RuntimeException(); // Wird noch geändert
         }
-        stack.addProtocol(new UDP().setValue("bind_addr", networkInterface))
+        s.addProtocol(new UDP().setValue("bind_addr", networkInterface))
                 .addProtocol(new PING())
                 .addProtocol(new MERGE2())
                 .addProtocol(new FD_SOCK())
@@ -161,42 +184,43 @@ public class DistributedCore {
                 .addProtocol(new MFC())
                 .addProtocol(new FRAG2());
         try {
-            stack.init();
-        } catch (Exception e) {
-            System.out.println("Unable to init networkstack");
-            e.printStackTrace();
+            s.init();
+        } catch (Exception ex) {
+            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, "Unable to init networkstack", ex);
         }
     }
 
-    public void joinLeaderChannel() {
+    protected void joinLeaderChannel() {
         try {
-            leaderChannel.connect(userName);
-        } catch (Exception e) {
-            e.printStackTrace();
-            //TODO Log dat shit.
+            leaderChannel.connect(LEADER_CHANNEL);
+        } catch (Exception ex) {
+            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     //TODO Determine if the PM and the posts have any difference in the sending process
     public boolean sendMessage(Message msg) {
         try {
-            if (groupChannel != null && groupChannel.isConnected()) {
+
+            if (groupChannel != null && groupChannel.isConnected() && !(msg.getObject() instanceof LeaderMessage)) {
                 groupChannel.send(msg);
+                return true;
+            } else if (leaderChannel != null && leaderChannel.isConnected() && (msg.getObject() instanceof LeaderMessage)) {
+                leaderChannel.send(msg);
                 return true;
             } else {
                 return false;
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            //TODO Log dat shit
+        } catch (Exception ex) {
+            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+
     }
 
     protected void userCheck(View view) {
         View chan = groupChannel.getView();
-
     }
 
     /**
@@ -204,23 +228,54 @@ public class DistributedCore {
      * when there was a problem while logging in.
      */
     protected void closeConnection() {
+        closeGroupConnection();
+        closeLeaderConnection();
+    }
+
+    protected void closeLeaderConnection() {
         if (leaderChannel != null) {
             leaderChannel.close();
         }
+    }
+
+    protected void closeGroupConnection() {
         if (groupChannel != null) {
             groupChannel.close();
         }
     }
+    
+    public void disconnectLeaderChannel() {
+        
+        leaderChannel.disconnect();
+        //bootStrap();
+        View view = groupChannel.getView();
+        if (view.getMembers().size() > 1) {
+        try {
+            leaderChannel.connect(LEADER_CHANNEL, view.getMembers().get(view.getMembers().size() - 1) , (long) 0.0);
+        } catch (Exception ex) {
+            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        } else {
+            groupChannel.close();
+        }  
+    }
+
 
     private void bootStrap() {
         System.out.println("Bootstrap started");
         View view = groupChannel.getView();
+        
+        
+        System.out.println("Creator: " + view.getCreator());
+        //TODO 
         if (view.getMembers().size() <= 1) {
+
             isLeader = true;
             try {
                 leaderChannel.connect(LEADER_CHANNEL);
                 System.out.println("Channel joined: " + leaderChannel.getClusterName());
-            
+                //
+                SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.MODERATOR);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -229,7 +284,7 @@ public class DistributedCore {
 
             for (Address a : view.getMembers()) {
                 System.out.println(a.toString());
-        
+
             }
             System.out.println("--------------------------------------");
         }
@@ -277,7 +332,7 @@ public class DistributedCore {
 
         @Override
         public void receive(Message msg) {
-            super.receive(msg);
+            MessageProcessor.getInstance().addMessage(msg);
             System.out.println("Leader message received");
         }
 

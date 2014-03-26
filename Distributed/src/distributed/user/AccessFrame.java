@@ -10,15 +10,26 @@ import distributed.net.DistributedCore;
 import distributed.util.IpAdressAdapter;
 import distributed.util.SettingsProvider;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+<<<<<<< HEAD
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+=======
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+>>>>>>> origin/leaderchannel_dirverse_bugs
 
 /**
  *
@@ -27,24 +38,31 @@ import org.apache.log4j.PatternLayout;
 public class AccessFrame extends javax.swing.JFrame {
     private static final Logger log = Logger.getLogger(AccessFrame.class);
     JFrame thisFrame;
-    private ArrayList<String> ipList;
 
     /**
      * Creates new form LoginFrame
      */
     public AccessFrame() {
+<<<<<<< HEAD
         
         //Setup the root logger
         Logger rootLogger = org.apache.log4j.Logger.getRootLogger();
         
         getIpList(); //get the ip list in ipList
+=======
+>>>>>>> origin/leaderchannel_dirverse_bugs
         initComponents();
-        for (int i = 0; i < ipList.size(); i++){ //fill combobox
-            jComboBoxInterface.addItem(ipList.get(i));
+        thisFrame = this;
+
+        if (SettingsProvider.getInstance().getUserName() != null) {
+            jTextFieldUsername.setText(SettingsProvider.getInstance().getUserName());
         }
 
-        thisFrame = this;
-        jTextFieldUsername.setText(SettingsProvider.getInstance().getUserName());
+        ArrayList<String> ipList = getIpList();
+        for (String ip : ipList) {
+            jComboBoxInterface.addItem(ip);
+        }
+
     }
 
     /**
@@ -121,6 +139,7 @@ public class AccessFrame extends javax.swing.JFrame {
         jPasswordFieldPassword.setEnabled(false);
 
         jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jTextArea1.setLineWrap(true);
         jTextArea1.setRows(5);
         jTextArea1.setText("Geben Sie ihr Passwort sowie Username für die von Ihnen ausgewählte Gruppe ein.");
@@ -230,7 +249,15 @@ public class AccessFrame extends javax.swing.JFrame {
 
     private void jButtonConnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonConnectMouseClicked
 
-        if (jTextFieldUsername.getText().isEmpty()) {
+    }//GEN-LAST:event_jButtonConnectMouseClicked
+
+    private void jButtonCancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonCancelMouseClicked
+        //System beenden und loggen
+        System.exit(0);
+    }//GEN-LAST:event_jButtonCancelMouseClicked
+
+    private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConnectActionPerformed
+               if (jTextFieldUsername.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this.getParent(), "Username is empty.");
             jTextFieldUsername.requestFocus();
         } else {
@@ -241,19 +268,12 @@ public class AccessFrame extends javax.swing.JFrame {
             jTextFieldUsername.setEnabled(false);
             jPasswordFieldPassword.setEnabled(false);
             jComboBoxInterface.setEnabled(false);
-            SettingsProvider.getInstance().storeUserName(jTextFieldUsername.getText());
+            SettingsProvider.getInstance().storeUserName(jTextFieldUsername.getText().trim());
+            SettingsProvider.getInstance().storeUserGroup(jTextFieldGroup.getText().trim());
+            SettingsProvider.getInstance().storeUserInterface(jComboBoxInterface.getSelectedItem().toString().trim());
             Thread t = new MyThread();
             t.start();
         }
-    }//GEN-LAST:event_jButtonConnectMouseClicked
-
-    private void jButtonCancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonCancelMouseClicked
-        //System beenden und loggen
-        System.exit(0);
-    }//GEN-LAST:event_jButtonCancelMouseClicked
-
-    private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConnectActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_jButtonConnectActionPerformed
 
     private void jButtonConnectKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButtonConnectKeyPressed
@@ -269,13 +289,25 @@ public class AccessFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void jComboBoxInterfaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxInterfaceActionPerformed
-        String adress = jComboBoxInterface.getSelectedItem().toString();
+       
+    }//GEN-LAST:event_jComboBoxInterfaceActionPerformed
+
+    public final ArrayList<String> getIpList() {
+        IpAdressAdapter ipAdapter = new IpAdressAdapter();
+        ArrayList<String> ipList = null;
         try {
+<<<<<<< HEAD
             DistributedCore.getInstance().configure(InetAddress.getByName(adress));
         } catch (UnknownHostException ex) {
             log.error(AccessFrame.class.getName());
+=======
+             ipList = ipAdapter.getNetworkInterfaces();
+        } catch (SocketException ex) {
+            Logger.getLogger(AccessFrame.class.getName()).log(Level.SEVERE, null, ex);
+>>>>>>> origin/leaderchannel_dirverse_bugs
         }
-    }//GEN-LAST:event_jComboBoxInterfaceActionPerformed
+        return ipList;
+    }
 
     /**
      * @param args the command line arguments
@@ -287,12 +319,14 @@ public class AccessFrame extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Mac OS X".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            /*for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+             if ("Mac OS X".equals(info.getName())) {
+             //javax.swing.UIManager.setLookAndFeel(info.getClassName());
+             javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+             break;
+             }
+             }*/
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(AccessFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
@@ -310,6 +344,7 @@ public class AccessFrame extends javax.swing.JFrame {
         });
     }
 
+<<<<<<< HEAD
     public final void getIpList() {
         IpAdressAdapter ipAdapter = new IpAdressAdapter();
         try {
@@ -324,6 +359,8 @@ public class AccessFrame extends javax.swing.JFrame {
         
     }
 
+=======
+>>>>>>> origin/leaderchannel_dirverse_bugs
     public class MyThread extends Thread {
 
         @Override

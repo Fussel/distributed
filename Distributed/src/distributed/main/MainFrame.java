@@ -2,6 +2,7 @@ package distributed.main;
 
 import distributed.dto.GroupMessage;
 import distributed.dto.IMessage;
+import distributed.dto.LeaderMessage;
 import distributed.dto.PrivateMessage;
 import distributed.main.AboutDialog;
 import distributed.msg.MsgDialog;
@@ -31,6 +32,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import org.jgroups.Message;
 
 /**
@@ -38,39 +40,30 @@ import org.jgroups.Message;
  * @author kiefer
  */
 public class MainFrame extends javax.swing.JFrame implements MessageCallback {
+
+    private boolean contextMenu = true;
+
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
-       
-        //Vereinfachung fuer das Testen
-        InetAddress testIP = null;
-        try {
-            testIP = InetAddress.getLocalHost();
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.println("IP: " + testIP.getHostAddress());
-        
-        
-        //TODO in AccesFrame -> Combobox laden (bitte mit CustomModell damit Objekte dadrin gespeichert werden koennen)
-         Enumeration nifEnm;
-        try {
-            nifEnm = NetworkInterface.getNetworkInterfaces();
-             while(nifEnm.hasMoreElements())
-          {
-               System.out.println(nifEnm.nextElement());
-          }
-        } catch (SocketException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         
-        Messenger.getInstance().addMessageListener(this);
-        DistributedCore.getInstance().configure(testIP);
 
-        DistributedCore.getInstance()
-                .joinGroup("hanswurst");
+        //Starte Programm
+        Messenger.getInstance().addMessageListener(this);
+
+        if (SettingsProvider.getInstance().getUserInterface() != null) {
+            try {
+                DistributedCore.getInstance().configure(InetAddress.getByName(SettingsProvider.getInstance().getUserInterface()));
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        if (!SettingsProvider.getInstance().getUserGroup().equals("")) {
+            DistributedCore.getInstance().joinGroup(SettingsProvider.getInstance().getUserGroup());
+        }
+
         jList1.setModel(
                 new MyListModel(null));
         jList1.addMouseListener(
@@ -89,7 +82,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
                     }
 
                     private void showPopup(MouseEvent e) {
-                        if (e.isPopupTrigger()) {
+                        if (e.isPopupTrigger() && contextMenu) {
                             showMenu(e);
                         }
                     }
@@ -301,6 +294,12 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
     private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
         this.setVisible(false);
 
+        if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) {
+            DistributedCore.getInstance().isLeader = false;
+            DistributedCore.getInstance().disconnectLeaderChannel();
+            SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.USER);
+        }
+        
         AccessFrame mAccessFrame = new AccessFrame();
         mAccessFrame.setLocationRelativeTo(this);
         mAccessFrame.setVisible(true);
@@ -340,7 +339,9 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
             if (m instanceof PrivateMessage) {
                 Messenger.getInstance().sendMessage((PrivateMessage) m);
             } else if (m instanceof GroupMessage) {
-                Messenger.getInstance().addGroupMessage((GroupMessage) m);
+                Messenger.getInstance().sendGroupMessage((GroupMessage) m);
+            } else if (m instanceof LeaderMessage) {
+                Messenger.getInstance().sendLeaderMessage((LeaderMessage) m);
             }
         } else {
             System.out.println("Keine Nachricht übergeben.");
@@ -357,13 +358,14 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+            /*for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+             if ("Nimbus".equals(info.getName())) {
+             javax.swing.UIManager.setLookAndFeel(info.getClassName());
+             break;
 
-                }
-            }
+             }
+             }*/
+            javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -412,19 +414,23 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
             //TODO Return the object
             StringBuilder sb = new StringBuilder();
             if (m instanceof GroupMessage) {
-                GroupMessage gm = ((GroupMessage) messages.get(index)); 
+                GroupMessage gm = ((GroupMessage) messages.get(index));
                 sb.append("[").append(DateUtils.getTimeFormatAsString(gm.getSendDate())).append("]");
                 sb.append("von ").append(gm.getSender()).append(": ");
                 sb.append(new String(gm.getMessage()));
                 return sb.toString();
-            } else if (m instanceof GroupMessage) {
-                if (((PrivateMessage) m).getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
-                    PrivateMessage pm = ((PrivateMessage) messages.get(index)); 
-                    sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]");
-                    sb.append("von ").append(pm.getSender()).append(": ");
-                    sb.append(DistributedKrypto.getInstance().decryptMessage(pm.getMessage())).append(" (privat)");
-                    return sb.toString();
-                }
+            } else if (m instanceof PrivateMessage) {
+                PrivateMessage pm = ((PrivateMessage) messages.get(index));
+                sb.append("[").append(DateUtils.getTimeFormatAsString(pm.getSendDate())).append("]");
+                sb.append("von ").append(pm.getSender()).append(": ");
+                sb.append(DistributedKrypto.getInstance().decryptMessage(pm.getMessage())).append(" (privat)");
+                return sb.toString();
+            } else if ((m instanceof LeaderMessage) && (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR)) {
+                LeaderMessage lm = ((LeaderMessage) messages.get(index));
+                sb.append("[").append(DateUtils.getTimeFormatAsString(lm.getSendDate())).append("]");
+                sb.append("von ").append(lm.getSender()).append(": ");
+                sb.append(new String(lm.getMessage())).append(" (leader)");
+                return sb.toString();
             }
 
             return null;
@@ -448,6 +454,9 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
         }
 
     }
+
+
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler3;

@@ -6,6 +6,8 @@
 
 package distributed.settings;
 
+import distributed.util.SettingsProvider;
+
 /**
  *
  * @author kiefer
@@ -18,6 +20,10 @@ public class SettingsDialog extends javax.swing.JDialog {
     public SettingsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        if ( SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) {
+            jCheckBoxMod.setSelected(true);
+        }
     }
 
     /**
@@ -135,7 +141,11 @@ public class SettingsDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonButtonMouseClicked
 
     private void jButtonButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonButtonActionPerformed
-        // TODO add your handling code here:
+        if (jCheckBoxMod.isSelected()) {
+            SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.MODERATOR);
+        } else {
+            SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.USER);
+        }
     }//GEN-LAST:event_jButtonButtonActionPerformed
 
     private void jButtonButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButtonButtonKeyPressed
