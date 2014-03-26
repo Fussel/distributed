@@ -40,7 +40,9 @@ import org.jgroups.Message;
  * @author kiefer
  */
 public class MainFrame extends javax.swing.JFrame implements MessageCallback {
+
     private boolean contextMenu = true;
+
     /**
      * Creates new form MainFrame
      */
@@ -49,7 +51,6 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
 
         //Starte Programm
         Messenger.getInstance().addMessageListener(this);
-        //TODO get IP via Accessframe (Settings)
 
         if (SettingsProvider.getInstance().getUserInterface() != null) {
             try {
@@ -61,10 +62,6 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
 
         if (!SettingsProvider.getInstance().getUserGroup().equals("")) {
             DistributedCore.getInstance().joinGroup(SettingsProvider.getInstance().getUserGroup());
-        }
-
-        if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) {
-            DistributedCore.getInstance().joinLeaderChannel();
         }
 
         jList1.setModel(
@@ -297,6 +294,12 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
     private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
         this.setVisible(false);
 
+        if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) {
+            DistributedCore.getInstance().isLeader = false;
+            DistributedCore.getInstance().disconnectLeaderChannel();
+            SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.USER);
+        }
+        
         AccessFrame mAccessFrame = new AccessFrame();
         mAccessFrame.setLocationRelativeTo(this);
         mAccessFrame.setVisible(true);
@@ -308,9 +311,6 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
         dialog.setTitle("Settings");
         dialog.setLocationRelativeTo(rootWindow);
         dialog.setVisible(true);
-
-        Thread leaderConThread = new MainFrame.LeaderConThread();
-        leaderConThread.start();
     }//GEN-LAST:event_jButtonSettingsActionPerformed
 
     private void jButtonAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAboutActionPerformed
@@ -455,30 +455,8 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
 
     }
 
-    public class LeaderConThread extends Thread {
 
-        @Override
-        public void run() {
-           
-            jButtonNewMsg.setEnabled(false);
-            jButtonLogout.setEnabled(false);
-            jButtonSettings.setEnabled(false);
-            contextMenu = false;
-            
-            if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) {
-                DistributedCore.getInstance().joinLeaderChannel();
-            } else {
-                DistributedCore.getInstance().disconnectLeaderChannel();
-            }
-
-            jButtonNewMsg.setEnabled(true);
-            jButtonLogout.setEnabled(true);
-            jButtonSettings.setEnabled(true);
-            contextMenu = true;
-          
-        }
-
-    }
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler3;

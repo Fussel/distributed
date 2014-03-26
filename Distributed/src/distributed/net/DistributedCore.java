@@ -49,7 +49,7 @@ public class DistributedCore {
     private JChannel groupChannel;
     private JChannel leaderChannel;
     private String userName;
-    private boolean isLeader;
+    public boolean isLeader;
     public final boolean moderator;
     private Address leader;
 
@@ -102,7 +102,7 @@ public class DistributedCore {
             mLeaderStack = new ProtocolStack();
             leaderChannel.setProtocolStack(mLeaderStack);
             leaderChannel.setReceiver(new LeaderListener());
-            leaderChannel.setName(SettingsProvider.getInstance().getUserName() + "-" + Math.random());
+            //leaderChannel.setName(SettingsProvider.getInstance().getUserName() + "-" + Math.random());
         }
 
     }
@@ -121,9 +121,12 @@ public class DistributedCore {
             groupChannel.connect(groupName);
             System.out.println("Group-Channel joined: " + groupChannel.getClusterName());
             System.out.println(groupChannel.getViewAsString());
-           // bootStrap();
+            
+            bootStrap();
 
             //TODO Check other members
+   
+            
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -187,7 +190,7 @@ public class DistributedCore {
         }
     }
 
-    public void joinLeaderChannel() {
+    protected void joinLeaderChannel() {
         try {
             leaderChannel.connect(LEADER_CHANNEL);
         } catch (Exception ex) {
@@ -218,7 +221,6 @@ public class DistributedCore {
 
     protected void userCheck(View view) {
         View chan = groupChannel.getView();
-
     }
 
     /**
@@ -243,18 +245,37 @@ public class DistributedCore {
     }
     
     public void disconnectLeaderChannel() {
+        
         leaderChannel.disconnect();
+        //bootStrap();
+        View view = groupChannel.getView();
+        if (view.getMembers().size() > 1) {
+        try {
+            leaderChannel.connect(LEADER_CHANNEL, view.getMembers().get(view.getMembers().size() - 1) , (long) 0.0);
+        } catch (Exception ex) {
+            Logger.getLogger(DistributedCore.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        } else {
+            groupChannel.close();
+        }  
     }
+
 
     private void bootStrap() {
         System.out.println("Bootstrap started");
         View view = groupChannel.getView();
+        
+        
+        System.out.println("Creator: " + view.getCreator());
+        //TODO 
         if (view.getMembers().size() <= 1) {
+
             isLeader = true;
             try {
                 leaderChannel.connect(LEADER_CHANNEL);
                 System.out.println("Channel joined: " + leaderChannel.getClusterName());
-
+                //
+                SettingsProvider.getInstance().storeUserType(SettingsProvider.UserType.MODERATOR);
             } catch (Exception e) {
                 e.printStackTrace();
             }
