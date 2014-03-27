@@ -9,6 +9,7 @@ package distributed.user;
 import distributed.database.DatabaseManager;
 import distributed.dto.GroupMessage;
 import distributed.dto.IMessage;
+import distributed.net.Messenger;
 
 /**
  *
@@ -101,7 +102,7 @@ public class ChangeMessageDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        DatabaseManager.getInstance().editMessage((GroupMessage)msg, jTextArea1.getText());
+        Messenger.getInstance().changeMessage((GroupMessage)msg, jTextArea1.getText());
         dispose();
         
     }//GEN-LAST:event_jButton1ActionPerformed
