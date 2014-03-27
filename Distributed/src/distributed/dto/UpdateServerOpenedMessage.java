@@ -6,11 +6,13 @@
 
 package distributed.dto;
 
+import java.io.Serializable;
+
 /**
  *
  * @author steffen
  */
-public class UpdateServerOpenedMessage {
+public class UpdateServerOpenedMessage implements Serializable {
     
     public final String ip;
     public final int port;
