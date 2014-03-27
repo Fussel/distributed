@@ -10,6 +10,7 @@ import distributed.dto.GroupMessage;
 import distributed.dto.IMessage;
 import distributed.dto.LeaderMessage;
 import distributed.dto.PrivateMessage;
+import distributed.util.DistributedKrypto;
 import java.util.ArrayList;
 import java.util.List;
 import org.jgroups.Message;
@@ -43,9 +44,11 @@ public class Messenger {
     public void addMessage(PrivateMessage msg) {
 
         DatabaseManager.getInstance().insertPrivateMessage(msg);
-
-        for (Messenger.MessageCallback o : observers) {
-            o.messageReceived(msg);
+        
+        if(msg.getReceiver().equals(DistributedKrypto.getInstance().getPUblicKeyString())) {
+            for (Messenger.MessageCallback o : observers) {
+                o.messageReceived(msg);
+            }
         }
     }
 
@@ -57,9 +60,11 @@ public class Messenger {
     public void addGroupMessage(GroupMessage msg) {
 
         DatabaseManager.getInstance().insertPost(msg);
-
-        for (Messenger.MessageCallback o : observers) {
-            o.messageReceived(msg);
+        
+        if(!msg.getDeleted()) {
+            for (Messenger.MessageCallback o : observers) {
+                o.messageReceived(msg);
+            }
         }
     }
 
