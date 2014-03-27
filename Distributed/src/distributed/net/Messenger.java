@@ -131,7 +131,7 @@ public class Messenger {
             callback.messageReceived(msg);
         }
         
-        for(GroupMessage msg: DatabaseManager.getInstance().loadPosts()) {
+        for(GroupMessage msg: DatabaseManager.getInstance().loadUndeletedPosts()) {
             callback.messageReceived(msg);
         }
     }

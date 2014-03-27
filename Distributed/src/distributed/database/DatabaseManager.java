@@ -108,6 +108,17 @@ public class DatabaseManager {
         }     
     }
     
+    public List<GroupMessage> loadUndeletedPosts() {
+        try {
+            return postDao.query(postDao.queryBuilder().where().
+                eq(IMessage.COL_NAME_DELETED, 0).prepare());
+        } catch(SQLException sql) {
+            log.error(sql);
+        }
+        
+        return null;
+    }
+    
     /**
      * Loads all GroupMessages in the database and returns them 
      * in a list.
