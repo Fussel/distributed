@@ -51,7 +51,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
         initComponents();
 
         //Starte Programm
-        Messenger.getInstance().addMessageListener(this);
+       
 
         if (SettingsProvider.getInstance().getUserInterface() != null) {
             try {
@@ -91,7 +91,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
         );
 
         jLabel1.setText("Hello " + SettingsProvider.getInstance().getUserName() + "!");
-
+        Messenger.getInstance().addMessageListener(this);
     }
 
     public void showMenu(MouseEvent evt) {

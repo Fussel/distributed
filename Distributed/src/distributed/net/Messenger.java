@@ -122,6 +122,17 @@ public class Messenger {
     public void addMessageListener(Messenger.MessageCallback callback) {
         if (!observers.contains(callback)) {
             observers.add(callback);
+            loadOldMessages(callback);
+        }
+    }
+    
+    private void loadOldMessages(MessageCallback callback) {
+        for(PrivateMessage msg: DatabaseManager.getInstance().getMyPrivateMessages()) {
+            callback.messageReceived(msg);
+        }
+        
+        for(GroupMessage msg: DatabaseManager.getInstance().loadPosts()) {
+            callback.messageReceived(msg);
         }
     }
 
