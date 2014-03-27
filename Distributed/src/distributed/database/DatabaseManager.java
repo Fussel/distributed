@@ -111,7 +111,7 @@ public class DatabaseManager {
     public List<GroupMessage> loadUndeletedPosts() {
         try {
             return postDao.query(postDao.queryBuilder().where().
-                eq(IMessage.COL_NAME_DELETED, "0").prepare());
+                eq(IMessage.COL_NAME_DELETED, false).prepare());
         } catch(SQLException sql) {
             log.error(sql);
         }
