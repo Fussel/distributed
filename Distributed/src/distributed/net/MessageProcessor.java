@@ -5,11 +5,11 @@
  */
 package distributed.net;
 
-import distributed.dto.*;
-import distributed.main.MainFrame;
+import distributed.dto.GroupMessage;
+import distributed.dto.LeaderMessage;
+import distributed.dto.PrivateMessage;
 import distributed.update.UpdateClient;
 import distributed.update.UpdateServer;
-import distributed.util.SettingsProvider;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.log4j.Logger;
@@ -25,7 +25,7 @@ public class MessageProcessor extends Thread {
     private static final Logger log = Logger.getLogger(MessageProcessor.class);
 
     private static MessageProcessor instance;
-    private BlockingQueue<Message> jobQueue;
+    private final BlockingQueue<Message> jobQueue;
     private boolean isRunning;
     
     private static final int STD_PORT = 56348;
@@ -86,7 +86,7 @@ public class MessageProcessor extends Thread {
             log.debug("Updateserver started");
         } else if("server_opened".equals(message)) {
             log.debug("Remote updateserver started");
-            new UpdateClient(msg.getSrc().toString(), STD_PORT);
+            new UpdateClient(msg.getSrc().toString(), STD_PORT).start();
             log.debug("Updateclient started");
         } else if (message.equals("close")) {
             DistributedCore.getInstance().closeConnection();
