@@ -10,6 +10,7 @@ import distributed.dto.IMessage;
 import distributed.dto.LeaderMessage;
 import distributed.dto.PrivateMessage;
 import distributed.net.DistributedCore;
+import distributed.net.Messenger;
 import distributed.util.DistributedKrypto;
 import distributed.util.MessageHelper;
 import distributed.util.SettingsProvider;
@@ -201,7 +202,11 @@ public class MsgDialog extends javax.swing.JDialog {
             jTextFieldMsg.requestFocus();
         } else {
             if (reciever != null) {
-                mMessage = new PrivateMessage(reciever, DistributedKrypto.getInstance().encryptString(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
+                
+                Message m = MessageHelper.buildPrivateMessage((GroupMessage) mMessage, jTextFieldMsg.getText());
+                DistributedCore.getInstance().sendMessage(m);
+        
+                //mMessage = new PrivateMessage(reciever, DistributedKrypto.getInstance().encryptString(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
             } else if ( (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) && (jCheckBoxLeaderGroup.isSelected())) {
                 mMessage = new LeaderMessage(jTextFieldMsg.getText());
             } else {
