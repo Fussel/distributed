@@ -160,7 +160,8 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
                         changeDialog.setText(m); //set jtextarea in the dialog
                         changeDialog.setVisible(true);
                         MyListModel model = (MyListModel) jList1.getModel();
-                        model.changeMsg(jList1.getSelectedIndex(), changeDialog.getText());
+                        model.remove(jList1.getSelectedIndex());
+                        
                         jList1.revalidate();
                         jList1.repaint();
                     }
