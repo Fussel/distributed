@@ -11,6 +11,7 @@ import distributed.dto.IMessage;
 import distributed.dto.LeaderMessage;
 import distributed.dto.PrivateMessage;
 import distributed.util.DistributedKrypto;
+import distributed.util.SettingsProvider;
 import java.util.ArrayList;
 import java.util.List;
 import org.jgroups.Message;
@@ -45,7 +46,7 @@ public class Messenger {
 
         DatabaseManager.getInstance().insertPrivateMessage(msg);
         
-        if(msg.getReceiver().equals(DistributedKrypto.getInstance().getPUblicKeyString())) {
+        if(msg.getReceiver().equals(SettingsProvider.getInstance().getUserName())) {
             for (Messenger.MessageCallback o : observers) {
                 o.messageReceived(msg);
             }
