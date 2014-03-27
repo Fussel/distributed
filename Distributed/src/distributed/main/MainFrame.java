@@ -133,7 +133,7 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
                 if (jList1.getSelectedIndex() > -1) {
                     IMessage m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
                     if (m.getSender().equals(SettingsProvider.getInstance().getUserName()) || SettingsProvider.getInstance().getUserType() == UserType.Moderator) {
-                        DatabaseManager.getInstance().markAsDeleted((GroupMessage) m);
+                        Messenger.getInstance().deleteMessage((GroupMessage) m);
                         MyListModel model = (MyListModel) jList1.getModel();
                         model.remove(jList1.getSelectedIndex());
                         jList1.revalidate();
