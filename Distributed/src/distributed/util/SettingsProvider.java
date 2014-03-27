@@ -44,7 +44,7 @@ public class SettingsProvider {
 
     public static enum UserType {
 
-        MODERATOR, USER;
+        MODERATOR, USER, Moderator;
     }
 
     private static final String SETTINGS_FILE = "../Settings.properties";
