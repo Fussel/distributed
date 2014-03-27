@@ -22,11 +22,14 @@ public class User {
     //Id will be the string representation of the public key of the user
     public static final String COL_NAME_ID      = "id";
     public static final String COL_NAME_NAME    = "name";
+    public static final String COL_NAME_KEY     = "key";
     
-    @DatabaseField(columnName = COL_NAME_ID, id = true, dataType = DataType.BYTE_ARRAY)
-    private byte[] userID;
+    @DatabaseField(columnName = COL_NAME_KEY, dataType = DataType.BYTE_ARRAY)
+    private byte[] userKey;
     @DatabaseField(columnName = COL_NAME_NAME)
     private String userName;
+    @DatabaseField(columnName = COL_NAME_ID, id = true)
+    private String userID;
     
     
     public User() {
@@ -34,18 +37,15 @@ public class User {
     }
     
     public User(String userID, String userName) {
-        this.userID   = userID.getBytes();
+        this.userID   = userID;
+        this.userKey    = userID.getBytes();
         this.userName = userName;
     }
 
     
     public String getUserID() {
         BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(userID);
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID.getBytes();
+        return encoder.encode(userKey);
     }
 
     public String getUserName() {
