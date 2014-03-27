@@ -15,6 +15,7 @@ import distributed.user.ChangeMessageDialog;
 import distributed.util.DateUtils;
 import distributed.util.DistributedKrypto;
 import distributed.util.SettingsProvider;
+import distributed.util.SettingsProvider.UserType;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,15 +27,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.text.Position;
 
 /**
  *
@@ -98,16 +95,18 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
         JPopupMenu menu = new JPopupMenu();
         JMenuItem jMenuItemShare = new javax.swing.JMenuItem();
         jMenuItemShare.setText("Share");
-        jMenuItemShare.addActionListener(new ActionListener() {
+        IMessage m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
+        if (m.getSender().equals(SettingsProvider.getInstance().getUserName()) || SettingsProvider.getInstance().getUserType() == UserType.Moderator) {
+            jMenuItemShare.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (jList1.getSelectedIndex() > -1) {
-                    showMessageDialog(null, ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex()));
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (jList1.getSelectedIndex() > -1) {
+                        showMessageDialog(null, ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex()));
+                    }
                 }
-            }
-        });
-
+            });
+        }
         JMenuItem jMenuItemDirectMessage = new javax.swing.JMenuItem();
         jMenuItemDirectMessage.setText("Direct Message");
         jMenuItemDirectMessage.addActionListener(new ActionListener() {
@@ -131,16 +130,16 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("delete message");
-                //TODO ABfrage ob der user rechte hat
                 if (jList1.getSelectedIndex() > -1) {
                     IMessage m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
-                    DatabaseManager.getInstance().markAsDeleted((GroupMessage) m);
-                    MyListModel model = (MyListModel) jList1.getModel();
-                    model.remove(jList1.getSelectedIndex());
-                    jList1.revalidate();
-                    jList1.repaint();
+                    if (m.getSender().equals(SettingsProvider.getInstance().getUserName()) || SettingsProvider.getInstance().getUserType() == UserType.Moderator) {
+                        DatabaseManager.getInstance().markAsDeleted((GroupMessage) m);
+                        MyListModel model = (MyListModel) jList1.getModel();
+                        model.remove(jList1.getSelectedIndex());
+                        jList1.revalidate();
+                        jList1.repaint();
+                    }
                 }
-
             }
 
         });
@@ -154,15 +153,17 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
                 //TODO ABfrage ob der user rechte hat
                 if (jList1.getSelectedIndex() > -1) {
                     IMessage m = ((MyListModel) jList1.getModel()).getMessageAt(jList1.getSelectedIndex());
-
-                    Frame ChangeMessageDialog = null;
-                    ChangeMessageDialog changeDialog = new ChangeMessageDialog(MainFrame.this, true);
-                    changeDialog.setText(m); //set jtextarea in the dialog
-                    changeDialog.setVisible(true);
-                    MyListModel model = (MyListModel) jList1.getModel();
-                    model.changeMsg(jList1.getSelectedIndex(), changeDialog.getText());
-                    jList1.revalidate();
-                    jList1.repaint();
+                    if (m.getSender().equals(SettingsProvider.getInstance().getUserName())) {
+                        System.out.println("ich bin der user: valid");
+                        Frame ChangeMessageDialog = null;
+                        ChangeMessageDialog changeDialog = new ChangeMessageDialog(MainFrame.this, true);
+                        changeDialog.setText(m); //set jtextarea in the dialog
+                        changeDialog.setVisible(true);
+                        MyListModel model = (MyListModel) jList1.getModel();
+                        model.changeMsg(jList1.getSelectedIndex(), changeDialog.getText());
+                        jList1.revalidate();
+                        jList1.repaint();
+                    }
                 }
 
             }
