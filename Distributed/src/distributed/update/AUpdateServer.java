@@ -234,6 +234,15 @@ public abstract class AUpdateServer extends Thread {
             log.error(ufe);
         } finally {
             log.info("Update ended 1");
+            try {
+                server.close();
+                client.close();
+                ois.close();
+                oos.flush();
+                oos.close();
+            } catch(IOException io) {
+                log.error(io);
+            }
         }
     }
 }

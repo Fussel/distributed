@@ -135,6 +135,20 @@ public class Messenger {
             callback.messageReceived(msg);
         }
     }
+    
+    public void deleteMessage(GroupMessage msg) {
+        DatabaseManager.getInstance().markAsDeleted(msg);
+        sendGroupMessage(msg);
+    }
+    
+    public void changeMessage(GroupMessage msg, String newMessage) {
+        DatabaseManager.getInstance().editMessage(msg, newMessage);
+        sendGroupMessage(msg);
+    }
+    
+    public void shareMessage(GroupMessage msg) {
+        DatabaseManager.getInstance().setPostAsShared(msg);
+    }
 
     public static interface MessageCallback {
 

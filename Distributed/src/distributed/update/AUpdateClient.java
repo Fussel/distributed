@@ -205,6 +205,14 @@ public abstract class AUpdateClient extends Thread {
         } catch (UpdateFailureException ufe) {
             log.error(ufe);
         } finally {
+            try {
+                client.close();
+                ois.close();
+                oos.flush();
+                oos.close();
+            } catch(IOException io) {
+                log.error(io);
+            }
             log.debug("Update ended");
         }
     }
