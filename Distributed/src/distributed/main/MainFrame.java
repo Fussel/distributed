@@ -393,6 +393,8 @@ public class MainFrame extends javax.swing.JFrame implements MessageCallback {
                 Messenger.getInstance().sendGroupMessage((GroupMessage) m);
             } else if (m instanceof LeaderMessage) {
                 Messenger.getInstance().sendLeaderMessage((LeaderMessage) m);
+            } else {
+                System.out.println("Nachricht is null");
             }
         } else {
             System.out.println("Keine Nachricht übergeben.");

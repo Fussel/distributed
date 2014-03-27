@@ -38,20 +38,20 @@ public class MsgDialog extends javax.swing.JDialog {
         if (message != null && (message instanceof GroupMessage)) {
             jTextFieldMsg.setText(new String(message.getMessage()));
             jComboBoxGroup.setEnabled(true);
-        } 
+        }
 
         if (reciever != null) {
             this.reciever = reciever;
             jLabelUser.setText(reciever);
             jTextFieldMsg.setText("");
             jComboBoxGroup.setEnabled(false);
-        } 
-        
+        }
+
         if (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) {
             jCheckBoxLeaderGroup.setVisible(true);
         } else {
-           jCheckBoxLeaderGroup.setVisible(false);
-        } 
+            jCheckBoxLeaderGroup.setVisible(false);
+        }
 
     }
 
@@ -202,16 +202,17 @@ public class MsgDialog extends javax.swing.JDialog {
             jTextFieldMsg.requestFocus();
         } else {
             if (reciever != null) {
-                
-                Message m = MessageHelper.buildPrivateMessage((GroupMessage) mMessage, jTextFieldMsg.getText());
-                DistributedCore.getInstance().sendMessage(m);
-        
+                if (mMessage instanceof GroupMessage) {
+                    Message m = MessageHelper.buildPrivateMessage((GroupMessage) mMessage, jTextFieldMsg.getText());
+                    DistributedCore.getInstance().sendMessage(m);
+                }
+                mMessage = null;
                 //mMessage = new PrivateMessage(reciever, DistributedKrypto.getInstance().encryptString(jTextFieldMsg.getText(), DistributedKrypto.getInstance().getMyPublicKey()));
-            } else if ( (SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) && (jCheckBoxLeaderGroup.isSelected())) {
+            } else if ((SettingsProvider.getInstance().getUserType() == SettingsProvider.UserType.MODERATOR) && (jCheckBoxLeaderGroup.isSelected())) {
                 mMessage = new LeaderMessage(jTextFieldMsg.getText());
             } else {
                 mMessage = new GroupMessage(DistributedKrypto.getInstance().publicKeyToString(DistributedKrypto.getInstance().getMyPublicKey()),
-                jTextFieldMsg.getText());
+                        jTextFieldMsg.getText());
             }
 
             this.dispose();
