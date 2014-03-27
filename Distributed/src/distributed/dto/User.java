@@ -9,6 +9,7 @@ package distributed.dto;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import java.util.Objects;
+import sun.misc.BASE64Encoder;
 
 /**
  *
@@ -22,7 +23,7 @@ public class User {
     public static final String COL_NAME_NAME    = "name";
     
     @DatabaseField(columnName = COL_NAME_ID, id = true)
-    private String userID;
+    private byte[] userID;
     @DatabaseField(columnName = COL_NAME_NAME)
     private String userName;
     
@@ -32,17 +33,18 @@ public class User {
     }
     
     public User(String userID, String userName) {
-        this.userID   = userID;
+        this.userID   = userID.getBytes();
         this.userName = userName;
     }
 
     
     public String getUserID() {
-        return userID;
+        BASE64Encoder encoder = new BASE64Encoder();
+        return encoder.encode(userID);
     }
 
     public void setUserID(String userID) {
-        this.userID = userID;
+        this.userID = userID.getBytes();
     }
 
     public String getUserName() {
