@@ -9,7 +9,10 @@ package distributed.dto;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import distributed.util.Util;
+import java.io.IOException;
 import java.util.Objects;
+import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -38,14 +41,13 @@ public class User {
     
     public User(String userID, String userName) {
         this.userID   = userID;
-        this.userKey    = userID.getBytes();
         this.userName = userName;
+        this.userKey    = Util.BASE64D(userID);
     }
 
     
     public String getUserID() {
-        BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(userKey);
+        return Util.BASE64E(userKey);
     }
 
     public String getUserName() {
