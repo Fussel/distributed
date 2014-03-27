@@ -219,6 +219,10 @@ public abstract class AUpdateServer extends Thread {
             
             o = ois.readObject();
             processMessage(o);
+            
+            o = ois.readObject();
+            processMessage(o);
+
 
         } catch (IOException e) {
             log.error(e);

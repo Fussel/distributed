@@ -9,6 +9,7 @@ import distributed.database.DatabaseManager;
 import distributed.dto.GroupMessage;
 import distributed.dto.IMessage;
 import distributed.dto.PrivateMessage;
+import distributed.net.Messenger;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -74,7 +75,7 @@ public abstract class AUpdateClient extends Thread {
                         Object uq = ois.readObject();
                         List<GroupMessage> msgs = (List<GroupMessage>) uq;
                         for(GroupMessage m: msgs) {
-                            DatabaseManager.getInstance().insertPost(m);
+                            Messenger.getInstance().addGroupMessage(m);
                         }
                     } catch (ClassNotFoundException cnf) {
                         log.error(cnf);
@@ -90,7 +91,7 @@ public abstract class AUpdateClient extends Thread {
                         Object uq = ois.readObject();
                         List<PrivateMessage> pms = (List<PrivateMessage>) uq;
                         for(PrivateMessage pm: pms) {
-                            DatabaseManager.getInstance().insertPrivateMessage(pm);
+                            Messenger.getInstance().addMessage(pm);
                         }
                         log.debug("UpdateQueue successfully loaded");
                     } catch(ClassNotFoundException cnf) {
@@ -198,7 +199,7 @@ public abstract class AUpdateClient extends Thread {
                     UpdateProtokoll.UpdateTask.SUCESSFUL));
             
             up = receiveMessage();
-
+           
         } catch (IOException io) {
             log.error(io);
         } catch (UpdateFailureException ufe) {
