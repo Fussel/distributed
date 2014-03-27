@@ -40,12 +40,6 @@ public class PrivateMessage extends IMessage implements Serializable {
     public void setReceiver(String receiver) {
         this.receiver = receiver;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        return hash;
-    }
     
     public boolean equals(Object o) {
         return super.equals(o);
