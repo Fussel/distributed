@@ -10,6 +10,7 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import distributed.util.SettingsProvider;
+import distributed.util.Util;
 import java.io.Serializable;
 import java.security.PublicKey;
 
@@ -24,8 +25,8 @@ public class GroupMessage extends IMessage implements Serializable {
     public final static String COL_NAME_PUBLIC_KEY  = "public_key";
     
 
-    @DatabaseField(columnName = COL_NAME_PUBLIC_KEY)
-    private String key;
+    @DatabaseField(columnName = COL_NAME_PUBLIC_KEY, dataType = DataType.BYTE_ARRAY)
+    private byte[] key;
 
 
     public GroupMessage() {
@@ -34,15 +35,11 @@ public class GroupMessage extends IMessage implements Serializable {
         
     public GroupMessage(String key, String message) {
         super(SettingsProvider.getInstance().getUserName(), message.getBytes());
-        this.key = key;
+        this.key = Util.BASE64D(key);
     }
 
     public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
+        return Util.BASE64E(key);
     }
     
     public String getMessageString() {
