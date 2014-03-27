@@ -52,6 +52,7 @@ public class DistributedCore {
     public boolean isLeader;
     public final boolean moderator;
     private Address leader;
+    protected String ipAddress;
 
     private static DistributedCore instance;
 
@@ -148,7 +149,7 @@ public class DistributedCore {
         }
 
         networkInterface = interfaceAddress;
-
+        ipAddress = interfaceAddress.getHostAddress();
         try {
             instance.buildigProtocollStack(stack);
             instance.buildigProtocollStack(mLeaderStack);

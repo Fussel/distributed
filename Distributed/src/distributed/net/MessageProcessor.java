@@ -8,6 +8,7 @@ package distributed.net;
 import distributed.dto.GroupMessage;
 import distributed.dto.LeaderMessage;
 import distributed.dto.PrivateMessage;
+import distributed.dto.UpdateServerOpenedMessage;
 import distributed.update.UpdateClient;
 import distributed.update.UpdateServer;
 import java.util.concurrent.BlockingQueue;
@@ -70,6 +71,11 @@ public class MessageProcessor extends Thread {
                     if (tmpUserName.equals(tmpReceiver)) {
                         Messenger.getInstance().addMessage((PrivateMessage) msg.getObject());                      
                     }                   
+                } else if(msg.getObject() instanceof UpdateServerOpenedMessage) {
+                    log.debug("Remote updateserver started");
+                    new UpdateClient(((UpdateServerOpenedMessage)msg.getObject()).ip
+                            , STD_PORT).start();
+                    log.debug("Updateclient started");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -82,12 +88,15 @@ public class MessageProcessor extends Thread {
         if (message.equals("update")) {
             log.debug("Update request");
             new UpdateServer(STD_PORT).start();
-            DistributedCore.getInstance().sendMessage(new Message(msg.getSrc(), "server_opened"));
-            log.debug("Updateserver started");
-        } else if("server_opened".equals(message)) {
-            log.debug("Remote updateserver started");
-            new UpdateClient(msg.getSrc().toString(), STD_PORT).start();
-            log.debug("Updateclient started");
+            
+            DistributedCore.getInstance().
+                    sendMessage(new Message(
+                            msg.getSrc(),
+                            new UpdateServerOpenedMessage(
+                            DistributedCore.getInstance().ipAddress
+                                    , STD_PORT)));
+            
+            log.debug("Updateserver started");            
         } else if (message.equals("close")) {
             DistributedCore.getInstance().closeConnection();
             System.out.println("Logged out");
